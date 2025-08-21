@@ -1,12 +1,14 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Search, Heart, MessageCircle, UserPlus, Star, Home, BarChart3, User } from 'lucide-react';
+import { Search, Heart, MessageCircle, Star, Home, BarChart3, User } from 'lucide-react';
+import { useAppContext } from '@/context/AppContext';
 
 const DiscoverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [followedUsers, setFollowedUsers] = useState(new Set());
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { setSelectedStory } = useAppContext();
 
   useEffect(() => {
     // Mock data matching the screenshot
@@ -20,6 +22,27 @@ const DiscoverPage = () => {
       { id: 7, username: 'dilipksola', avatar: 'https://randomuser.me/api/portraits/women/33.jpg', hasStory: true, isVerified: false },
       { id: 8, username: 'rajveer948', avatar: 'https://randomuser.me/api/portraits/men/41.jpg', hasStory: true, isVerified: false },
       { id: 9, username: 'sharma_mon', avatar: 'https://randomuser.me/api/portraits/women/29.jpg', hasStory: true, isVerified: false },
+      { id: 10, username: 'priya_dev', avatar: 'https://randomuser.me/api/portraits/women/15.jpg', hasStory: true, isVerified: true },
+      { id: 11, username: 'rohit_kumar', avatar: 'https://randomuser.me/api/portraits/men/18.jpg', hasStory: true, isVerified: false },
+      { id: 12, username: 'sneha_art', avatar: 'https://randomuser.me/api/portraits/women/52.jpg', hasStory: true, isVerified: true },
+      { id: 13, username: 'vikash_23', avatar: 'https://randomuser.me/api/portraits/men/38.jpg', hasStory: true, isVerified: false },
+      { id: 14, username: 'anjali_99', avatar: 'https://randomuser.me/api/portraits/women/71.jpg', hasStory: true, isVerified: false },
+      { id: 15, username: 'arjun_fit', avatar: 'https://randomuser.me/api/portraits/men/55.jpg', hasStory: true, isVerified: true },
+      { id: 16, username: 'kavya_pic', avatar: 'https://randomuser.me/api/portraits/women/84.jpg', hasStory: true, isVerified: false },
+      { id: 17, username: 'deepak_travel', avatar: 'https://randomuser.me/api/portraits/men/62.jpg', hasStory: true, isVerified: false },
+      { id: 18, username: 'riya_music', avatar: 'https://randomuser.me/api/portraits/women/37.jpg', hasStory: true, isVerified: true },
+      { id: 19, username: 'sahil_code', avatar: 'https://randomuser.me/api/portraits/men/75.jpg', hasStory: true, isVerified: false },
+      { id: 20, username: 'pooja_dance', avatar: 'https://randomuser.me/api/portraits/women/91.jpg', hasStory: true, isVerified: false },
+      { id: 21, username: 'karan_gym', avatar: 'https://randomuser.me/api/portraits/men/48.jpg', hasStory: true, isVerified: false },
+      { id: 22, username: 'neha_food', avatar: 'https://randomuser.me/api/portraits/women/26.jpg', hasStory: true, isVerified: true },
+      { id: 23, username: 'amit_bike', avatar: 'https://randomuser.me/api/portraits/men/83.jpg', hasStory: true, isVerified: false },
+      { id: 24, username: 'shreya_yoga', avatar: 'https://randomuser.me/api/portraits/women/58.jpg', hasStory: true, isVerified: false },
+      { id: 25, username: 'harsh_gamer', avatar: 'https://randomuser.me/api/portraits/men/27.jpg', hasStory: false, isVerified: false },
+      { id: 26, username: 'isha_books', avatar: 'https://randomuser.me/api/portraits/women/43.jpg', hasStory: false, isVerified: false },
+      { id: 27, username: 'rahul_tech', avatar: 'https://randomuser.me/api/portraits/men/59.jpg', hasStory: true, isVerified: true },
+      { id: 28, username: 'tanya_art', avatar: 'https://randomuser.me/api/portraits/women/72.jpg', hasStory: false, isVerified: false },
+      { id: 29, username: 'gaurav_sports', avatar: 'https://randomuser.me/api/portraits/men/34.jpg', hasStory: true, isVerified: false },
+      { id: 30, username: 'meera_fashion', avatar: 'https://randomuser.me/api/portraits/women/19.jpg', hasStory: true, isVerified: true },
     ]);
   }, []);
 
@@ -39,6 +62,8 @@ const DiscoverPage = () => {
 
   const handleStoryClick = (user) => {
     console.log('Story clicked:', user);
+    // Set the selected story to open the modal
+    setSelectedStory(user);
   };
 
   return (
@@ -47,7 +72,7 @@ const DiscoverPage = () => {
       <div className="sticky top-0 z-40 bg-white border-b border-gray-100">
         {/* Title */}
         <div className="px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 text-center">Secret Stories</h1>
+          <h1 className="text-2xl font-bold text-gray-500 text-center">Secret Stories</h1>
         </div>
 
         {/* Search Bar */}
@@ -99,30 +124,6 @@ const DiscoverPage = () => {
                   </div>
                 </button>
 
-                {/* Verified Badge */}
-                {user.isVerified && (
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center shadow-md animate-bounce">
-                    <div className="w-3 h-3 bg-white rounded-full flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Follow Button */}
-                <button
-                  onClick={() => handleFollow(user.id)}
-                  className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-125 flex items-center justify-center transform hover:rotate-12 ${
-                    followedUsers.has(user.id)
-                      ? 'bg-green-500 text-white animate-pulse'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
-                  }`}
-                >
-                  {followedUsers.has(user.id) ? (
-                    <div className="w-3 h-3 text-white font-bold">✓</div>
-                  ) : (
-                    <UserPlus className="w-3 h-3" />
-                  )}
-                </button>
               </div>
 
               {/* Username */}

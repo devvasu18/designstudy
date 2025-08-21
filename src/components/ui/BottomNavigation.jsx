@@ -18,7 +18,7 @@ const BottamNavigation = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 border-t border-gray-200 px-2 py-1 z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm px-2 py-1 z-50 shadow-lg">
       <div className="flex justify-around items-center max-w-md mx-auto">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
@@ -27,7 +27,7 @@ const BottamNavigation = ({ activeTab, setActiveTab }) => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-col items-center space-y-0.5 p-1.5 rounded-lg transition-all duration-300 ${
-                activeTab === tab.id ? "bg-gray-200 font-bold text-blue-600" : "hover:bg-gray-100 text-gray-600"
+                activeTab === tab.id ? "text-blue-600 scale-105" : "text-gray-600 hover:text-gray-800"
               }`}
             >
               <IconComponent size={18} />

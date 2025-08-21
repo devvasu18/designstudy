@@ -7,7 +7,7 @@ import { AppContextProvider, useAppContext } from "@/context/AppContext";
 // shared UI components
 import BottomNavigation from "@/components/ui/BottomNavigation";
 import NotificationToast from "@/components/ui/NotificationToast";
-import StoryViewModalSimple from "@/components/features/stories/StoryViewModalSimple";
+import StoryViewModal from "@/components/features/stories/StoryViewModal";
 import DisablePinchZoom from "@/components/ui/DisablePinchZoom";
 
 function TabsLayoutContent({ children }) {
@@ -71,8 +71,9 @@ function TabsLayoutContent({ children }) {
       
       {/* Story Modal */}
       {selectedStory && (
-        <StoryViewModalSimple 
+        <StoryViewModal 
           story={selectedStory} 
+          isOpen={!!selectedStory}
           onClose={() => setSelectedStory(null)} 
         />
       )}

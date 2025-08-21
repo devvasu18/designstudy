@@ -3,8 +3,6 @@ import { Heart, MessageCircle, Share } from 'lucide-react';
 const StoryViewModal = ({ story, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [touchEndX, setTouchEndX] = useState(null);
   
   const storyUsers = [
     {
@@ -54,9 +52,13 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
   const storyImages = currentUser?.images || [];
 
   const nextStory = () => {
+    console.log('Next tapped - currentIndex:', currentIndex, 'storyImages.length:', storyImages.length);
+    
+    // If there are more stories for the current user, show next story
     if (currentIndex < storyImages.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
+      // If no more stories for current user, move to next user's first story
       if (currentUserIndex < storyUsers.length - 1) {
         setCurrentUserIndex(prev => prev + 1);
         setCurrentIndex(0);
@@ -65,12 +67,17 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
   };
 
   const prevStory = () => {
+    console.log('Prev tapped - currentIndex:', currentIndex, 'currentUserIndex:', currentUserIndex);
+    
+    // If there are previous stories for the current user, show previous story
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1);
     } else {
+      // If no previous stories for current user, move to previous user's last story
       if (currentUserIndex > 0) {
-        setCurrentUserIndex(prev => prev - 1);
-        const prevUser = storyUsers[currentUserIndex - 1];
+        const prevUserIndex = currentUserIndex - 1;
+        const prevUser = storyUsers[prevUserIndex];
+        setCurrentUserIndex(prevUserIndex);
         setCurrentIndex(prevUser.images.length - 1);
       }
     }
@@ -89,32 +96,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       const prevUser = storyUsers[currentUserIndex - 1];
       setCurrentIndex(prevUser.images.length - 1);
     }
-  };
-
-  const handleTouchStart = (e) => {
-    setTouchStartX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX || !touchEndX) return;
-    
-    const distance = touchStartX - touchEndX;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) {
-      nextUser();
-    }
-    if (isRightSwipe) {
-      prevUser();
-    }
-
-    setTouchStartX(null);
-    setTouchEndX(null);
   };
 
   if (!isOpen || !currentUser) return null;
@@ -160,12 +141,7 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       </div>
 
       {/* Story Content */}
-      <div 
-        className="relative w-full h-full max-w-md mx-auto"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+      <div className="relative w-full h-full max-w-md mx-auto">
         <img
           src={storyImages[currentIndex]}
           alt={`Story ${currentIndex + 1}`}
@@ -173,15 +149,15 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
           loading="lazy"
         />
         
-        {/* Navigation Areas */}
+        {/* Navigation Areas - Left and Right Tap */}
         <button 
           onClick={prevStory}
-          className="absolute left-0 top-0 w-1/3 h-full bg-transparent z-20"
+          className="absolute left-0 top-0 w-1/2 h-full bg-transparent z-20 focus:outline-none active:bg-white/10 transition-colors"
           aria-label="Previous story"
         />
         <button 
           onClick={nextStory}
-          className="absolute right-0 top-0 w-1/3 h-full bg-transparent z-20"
+          className="absolute right-0 top-0 w-1/2 h-full bg-transparent z-20 focus:outline-none active:bg-white/10 transition-colors"
           aria-label="Next story"
         />
       </div>
