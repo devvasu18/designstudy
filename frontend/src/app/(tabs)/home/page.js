@@ -3,15 +3,15 @@ import { useState } from "react";
 import ProfileInfoCard from "@/components/ProfileInfoCard";
 import StoriesSwiper from "@/components/StoriesSwiper";
 import SecretStalkersContent from "@/components/SecretStalkersContent";
+import StoryViewModal from "@/components/StoryViewModal";
 import useScrollPosition from "@/hooks/useScrollPosition";
-import { useAppContext } from "@/context/AppContext";
 
 export default function HomePage() {
   const isStoriesSticky = useScrollPosition(50);
-  const { setSelectedStory, showNotification } = useAppContext();
+  const [selectedStory, setSelectedStory] = useState(null);
 
   const handleAddStory = () => {
-    showNotification("📸 Add story feature coming soon!", "info");
+    alert("📸 Add story feature coming soon!");
   };
 
   const handleUnlock = (friendId) => {
@@ -49,9 +49,9 @@ export default function HomePage() {
         </button>
       </div>
       
-      <StoriesSwiper
+            <StoriesSwiper
         isSticky={isStoriesSticky}
-        onStoryClick={handleStoryClick}
+        onStoryClick={(story) => setSelectedStory(story)}
         onAddStory={handleAddStory}
       />
       
