@@ -37,5 +37,3 @@ const StoryViewModal = ({ story, onClose }) => {
 };
 
 export default StoryViewModal;
-
-export default StoryViewModal;
