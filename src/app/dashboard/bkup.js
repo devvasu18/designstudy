@@ -306,7 +306,7 @@ const StoriesSwiper = ({ onStoryClick, onAddStory, isSticky }) => {
     { id: 1, username: 'vasudev', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', hasNewStory: false, isOwn: true, timeAgo: 'Add story' },
     { id: 2, username: 'priya', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasNewStory: true, timeAgo: '2h' },
     { id: 3, username: 'rahul', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasNewStory: false, timeAgo: '1d' },
-    { id: 4, username: 'anjali', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', hasNewStory: true, timeAgo: '4h' },
+    { id: 4, username: 'anjali', avatar: 'https://randomuser.me/api/portraits/men/67.jpg', hasNewStory: true, timeAgo: '4h' },
     { id: 5, username: 'arjun', avatar: 'https://randomuser.me/api/portraits/men/45.jpg', hasNewStory: false, timeAgo: '2d' },
     { id: 6, username: 'kavya', avatar: 'https://randomuser.me/api/portraits/women/33.jpg', hasNewStory: true, timeAgo: '6h' },
   ]);

@@ -5,7 +5,7 @@ const StoriesSwiper = ({ onStoryClick, isSticky }) => {
   const [stories] = useState([
     { id: 2, username: 'priya', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasNewStory: true },
     { id: 3, username: 'rahul', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasNewStory: false },
-    { id: 4, username: 'anjali', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', hasNewStory: true },
+    { id: 4, username: 'anjali', avatar: 'https://randomuser.me/api/portraits/men/67.jpg', hasNewStory: true },
     { id: 5, username: 'arjun', avatar: 'https://randomuser.me/api/portraits/men/45.jpg', hasNewStory: false },
     { id: 6, username: 'kavya', avatar: 'https://randomuser.me/api/portraits/women/33.jpg', hasNewStory: true },
   ]);

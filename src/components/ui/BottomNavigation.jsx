@@ -1,6 +1,14 @@
 "use client";
+import { useAppContext } from "@/context/AppContext";
 
 const BottamNavigation = ({ activeTab, setActiveTab }) => {
+  const { isStoryModalOpen } = useAppContext();
+  
+  // Hide navigation when story modal is open
+  if (isStoryModalOpen) {
+    return null;
+  }
+
   const tabs = [
     { id: "home", icon: "🏠", label: "Home" },
     { id: "discover", icon: "🔍", label: "Discover" },

@@ -8,6 +8,8 @@ const AppContext = createContext();
 export function AppContextProvider({ children }) {
   const [selectedStory, setSelectedStory] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
+  const [currentStory, setCurrentStory] = useState(null);
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
@@ -17,12 +19,26 @@ export function AppContextProvider({ children }) {
     setNotification(null);
   };
 
+  const openStoryModal = (story) => {
+    setCurrentStory(story);
+    setIsStoryModalOpen(true);
+  };
+
+  const closeStoryModal = () => {
+    setIsStoryModalOpen(false);
+    setCurrentStory(null);
+  };
+
   const value = {
     selectedStory,
     setSelectedStory,
     notification,
     showNotification,
-    hideNotification
+    hideNotification,
+    isStoryModalOpen,
+    currentStory,
+    openStoryModal,
+    closeStoryModal
   };
 
   return (
