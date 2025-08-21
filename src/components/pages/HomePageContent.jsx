@@ -7,6 +7,7 @@ import useScrollPosition from "@/hooks/useScrollPosition";
 
 export default function HomePageContent() {
   const isStoriesSticky = useScrollPosition(50);
+  const isSecretViewersSticky = useScrollPosition(120); // Adjust based on stories height
   const { setSelectedStory, showNotification } = useAppContext();
 
   const handleUnlock = (friendId) => {
@@ -19,7 +20,7 @@ export default function HomePageContent() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-0">
       <ProfileInfoCard />
       
       <StoriesSwiper
@@ -28,6 +29,7 @@ export default function HomePageContent() {
       />
       
       <SecretStalkersContent
+        isSticky={isSecretViewersSticky}
         onUnlock={handleUnlock}
       />
     </div>

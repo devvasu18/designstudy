@@ -1,8 +1,45 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const ProfileInfoCard = ({ onFollow, isFollowing }) => {
   const [showFullBio, setShowFullBio] = useState(false);
+  const [animatedStats, setAnimatedStats] = useState({
+    followers: 0,
+    following: 0,
+    posts: 0
+  });
+
+  const finalStats = {
+    followers: 398,
+    following: 238,
+    posts: 15
+  };
+
+  // Animate numbers on component mount
+  useEffect(() => {
+    const duration = 2000; // 2 seconds
+    const steps = 60;
+    const stepDuration = duration / steps;
+
+    Object.keys(finalStats).forEach(key => {
+      let current = 0;
+      const target = finalStats[key];
+      const increment = target / steps;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        
+        setAnimatedStats(prev => ({
+          ...prev,
+          [key]: Math.floor(current)
+        }));
+      }, stepDuration);
+    });
+  }, []);
   
   return (
     <div className="bg-white pt-0">
@@ -38,28 +75,19 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
           </div>
         </div>
 
-        {/* Enhanced Stats */}
+        {/* Clean Stats */}
         <div className="grid grid-cols-3 gap-3 mb-3">
           <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-1">398</div>
-            <div className="text-xs text-gray-600 font-medium mb-2">Followers</div>
-            <div className="w-full h-1.5 bg-purple-100 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full w-3/4 transition-all duration-500"></div>
-            </div>
+            <div className="text-3xl font-bold text-purple-500 mb-1">{animatedStats.followers}</div>
+            <div className="text-xs text-gray-600 font-medium">Followers</div>
           </div>
           <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-1">238</div>
-            <div className="text-xs text-gray-600 font-medium mb-2">Following</div>
-            <div className="w-full h-1.5 bg-purple-100 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full w-2/3 transition-all duration-500"></div>
-            </div>
+            <div className="text-3xl font-bold text-purple-500 mb-1">{animatedStats.following}</div>
+            <div className="text-xs text-gray-600 font-medium">Following</div>
           </div>
           <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
-            <div className="text-2xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-1">15</div>
-            <div className="text-xs text-gray-600 font-medium mb-2">Posts</div>
-            <div className="w-full h-1.5 bg-purple-100 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full w-1/4 transition-all duration-500"></div>
-            </div>
+            <div className="text-3xl font-bold text-purple-500 mb-1">{animatedStats.posts}</div>
+            <div className="text-xs text-gray-600 font-medium">Posts</div>
           </div>
         </div>
       </div>

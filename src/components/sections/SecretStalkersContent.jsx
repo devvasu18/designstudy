@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { MoreVertical, Lock, Heart, Share, Plus, Search, Bell } from 'lucide-react';
 
-const SecretStalkersContent = ({ onUnlock }) => {
+const SecretStalkersContent = ({ onUnlock, isSticky }) => {
   const [friends, setFriends] = useState([
     {
       id: 1,
@@ -67,6 +67,62 @@ const SecretStalkersContent = ({ onUnlock }) => {
       avatar: 'https://randomuser.me/api/portraits/women/28.jpg',
       type: 'Secret Viewer',
       locked: true
+    },
+    {
+      id: 9,
+      name: 'Secret Viewer',
+      username: 'Tap to unlock',
+      avatar: 'https://randomuser.me/api/portraits/men/35.jpg',
+      type: 'Friend',
+      locked: true
+    },
+    {
+      id: 10,
+      name: 'Secret Viewer',
+      username: 'Tap to unlock',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+      type: 'Secret Viewer',
+      locked: true
+    },
+    {
+      id: 11,
+      name: 'Secret Viewer',
+      username: 'Tap to unlock',
+      avatar: 'https://randomuser.me/api/portraits/men/82.jpg',
+      type: 'Friend',
+      locked: true
+    },
+    {
+      id: 12,
+      name: 'Secret Viewer',
+      username: 'Tap to unlock',
+      avatar: 'https://randomuser.me/api/portraits/women/91.jpg',
+      type: 'Secret Viewer',
+      locked: true
+    },
+    {
+      id: 13,
+      name: 'Secret Viewer',
+      username: 'Tap to unlock',
+      avatar: 'https://randomuser.me/api/portraits/men/45.jpg',
+      type: 'Friend',
+      locked: true
+    },
+    {
+      id: 14,
+      name: 'Secret Viewer',
+      username: 'Tap to unlock',
+      avatar: 'https://randomuser.me/api/portraits/women/55.jpg',
+      type: 'Secret Viewer',
+      locked: true
+    },
+    {
+      id: 15,
+      name: 'Secret Viewer',
+      username: 'Tap to unlock',
+      avatar: 'https://randomuser.me/api/portraits/men/58.jpg',
+      type: 'Friend',
+      locked: true
     }
   ]);
 
@@ -81,30 +137,19 @@ const SecretStalkersContent = ({ onUnlock }) => {
 
   return (
     <div className="bg-white">
-      {/* Section Header */}
-      <div className="px-4 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">Secret Viewers</h2>
-            <p className="text-sm text-gray-600 mt-1">Who's been checking your profile</p>
-          </div>
-          <div className="text-2xl">🕵️</div>
-        </div>
-      </div>
-      
       {/* Friends List */}
-      <div className="space-y-1">
+      <div className="space-y-0">
         {friends.map((friend) => (
           <div 
             key={friend.id} 
-            className="flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-all duration-200 cursor-pointer border-b border-gray-50 last:border-b-0 group"
+            className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 transition-all duration-200 cursor-pointer border-b border-gray-50 last:border-b-0 group"
             onClick={() => friend.locked && handleUnlock(friend.id)}
           >
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <div className="relative">
-                <div className={`w-14 h-14 rounded-full overflow-hidden transition-all duration-300 ${
+                <div className={`w-11 h-11 rounded-full overflow-hidden transition-all duration-300 ${
                   friend.locked ? 'blur-sm grayscale group-hover:blur-none group-hover:grayscale-0' : ''
-                } shadow-md`}>
+                } shadow-sm`}>
                   <img
                     src={friend.avatar}
                     alt={friend.name}
@@ -114,21 +159,21 @@ const SecretStalkersContent = ({ onUnlock }) => {
                 </div>
                 {friend.locked && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full group-hover:bg-black/20 transition-colors duration-300">
-                    <Lock className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-200" />
+                    <Lock className="w-3.5 h-3.5 text-white group-hover:scale-110 transition-transform duration-200" />
                   </div>
                 )}
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-gray-900 text-base group-hover:text-purple-600 transition-colors">
+                <div className="font-medium text-gray-900 text-sm group-hover:text-purple-600 transition-colors antialiased tracking-tight">
                   {friend.locked ? '🔒 Tap to unlock' : friend.name}
                 </div>
-                <div className="text-sm text-gray-500 mb-1">
+                <div className="text-xs text-gray-500 leading-tight antialiased">
                   {friend.locked ? 'Hidden identity' : friend.username}
                 </div>
               </div>
             </div>
             <div className="flex items-center">
-              <div className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+              <div className={`px-2 py-0.5 rounded-full text-xs font-medium transition-all duration-200 ${
                 friend.type === 'Friend' 
                   ? 'bg-purple-100 text-purple-700 hover:bg-purple-200 group-hover:scale-105' 
                   : 'bg-red-100 text-red-700 hover:bg-red-200 group-hover:scale-105'
@@ -141,8 +186,8 @@ const SecretStalkersContent = ({ onUnlock }) => {
       </div>
 
       {/* Load More */}
-      <div className="px-4 py-6 border-t border-gray-100">
-        <button className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl">
+      <div className="px-4 py-3 border-t border-gray-100">
+        <button className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium text-sm rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg antialiased tracking-tight">
           <div className="flex items-center justify-center gap-2">
             <Search className="w-4 h-4" />
             <span>Discover more viewers</span>

@@ -14,8 +14,8 @@ const StoriesSwiper = ({ onStoryClick, isSticky }) => {
     <div className={`bg-white px-3 py-3 border-b border-gray-100 transition-all duration-300 
       ${isSticky ? 'sticky top-0 z-50 shadow-lg backdrop-blur-md bg-white/95' : ''}`}>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-bold text-gray-800 px-1">Stories</h2>
-        <div className="text-xs text-purple-600 font-medium cursor-pointer hover:text-purple-800">View all</div>
+        <h2 className="text-lg font-bold text-gray-800 px-1 antialiased tracking-tight">Stories</h2>
+        <div className="text-xs text-purple-600 font-medium cursor-pointer hover:text-purple-800 antialiased">View all</div>
       </div>
       <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
         {stories.map((story) => (
@@ -33,11 +33,16 @@ const StoriesSwiper = ({ onStoryClick, isSticky }) => {
                 <img src={story.avatar} alt={story.username} className="w-full h-full object-cover rounded-full" />
               </div>
             </div>
-            <span className="text-xs text-gray-700 truncate max-w-[60px] block group-hover:text-purple-600">
+            <span className="text-xs text-gray-700 truncate max-w-[60px] block group-hover:text-purple-600 antialiased tracking-tight">
               {story.username}
             </span>
           </button>
         ))}
+      </div>
+      
+      {/* Secret Viewers Header */}
+      <div className="mt-3 px-1">
+        <h2 className="text-xl font-semibold text-gray-500 tracking-tight antialiased">Secret Viewers</h2>
       </div>
     </div>
   );
