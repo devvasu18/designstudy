@@ -24,19 +24,14 @@ const StoriesSwiper = ({ onStoryClick, isSticky }) => {
             onClick={() => onStoryClick?.(story)}
             className="flex flex-col items-center space-y-2 flex-shrink-0 group"
           >
-            <div className="relative">
-              <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
-                story.hasNewStory
-                  ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 group-hover:scale-110 shadow-lg'
-                  : 'bg-gray-200 group-hover:scale-105'
-              }`}>
-                <div className="relative w-full h-full rounded-full overflow-hidden bg-white p-0.5">
-                  <img src={story.avatar} alt={story.username} className="w-full h-full object-cover rounded-full" />
-                </div>
+            <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
+              story.hasNewStory
+                ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 group-hover:scale-110 shadow-lg'
+                : 'bg-gray-200 group-hover:scale-105'
+            }`}>
+              <div className="relative w-full h-full rounded-full overflow-hidden bg-white p-0.5">
+                <img src={story.avatar} alt={story.username} className="w-full h-full object-cover rounded-full" />
               </div>
-              {story.hasNewStory && (
-                <div className="absolute top-0.5 right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-sm animate-pulse"></div>
-              )}
             </div>
             <span className="text-xs text-gray-700 truncate max-w-[60px] block group-hover:text-purple-600">
               {story.username}

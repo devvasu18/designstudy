@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import ProfileInfoCard from "@/components/features/profile/ProfileInfoCard";
 import StoriesSwiper from "@/components/features/stories/StoriesSwiper";

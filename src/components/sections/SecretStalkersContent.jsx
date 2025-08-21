@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { MoreVertical, Lock, Heart, MessageCircle, Share, Plus, Search, Bell } from 'lucide-react';
+import { MoreVertical, Lock, Heart, Share, Plus, Search, Bell } from 'lucide-react';
 
 const SecretStalkersContent = ({ onUnlock }) => {
   const [friends, setFriends] = useState([
@@ -10,8 +10,7 @@ const SecretStalkersContent = ({ onUnlock }) => {
       username: '@divanshu.joshi.5',
       avatar: 'https://randomuser.me/api/portraits/men/75.jpg',
       type: 'Friend',
-      locked: false,
-      lastSeen: '2 hours ago'
+      locked: false
     },
     {
       id: 2,
@@ -19,17 +18,15 @@ const SecretStalkersContent = ({ onUnlock }) => {
       username: '@riya.sharma',
       avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
       type: 'Friend',
-      locked: false,
-      lastSeen: '1 day ago'
+      locked: false
     },
     {
       id: 3,
       name: 'Secret Viewer',
       username: 'Tap to unlock',
       avatar: 'https://randomuser.me/api/portraits/women/89.jpg',
-      type: 'Secret Viewer',
-      locked: true,
-      lastSeen: 'Recently'
+      type: 'Friend',
+      locked: true
     },
     {
       id: 4,
@@ -37,17 +34,15 @@ const SecretStalkersContent = ({ onUnlock }) => {
       username: 'Tap to unlock',
       avatar: 'https://randomuser.me/api/portraits/men/67.jpg',
       type: 'Secret Viewer',
-      locked: true,
-      lastSeen: 'Recently'
+      locked: true
     },
     {
       id: 5,
       name: 'Secret Viewer',
       username: 'Tap to unlock',
       avatar: 'https://randomuser.me/api/portraits/women/23.jpg',
-      type: 'Secret Viewer',
-      locked: true,
-      lastSeen: 'Recently'
+      type: 'Friend',
+      locked: true
     },
     {
       id: 6,
@@ -55,17 +50,15 @@ const SecretStalkersContent = ({ onUnlock }) => {
       username: 'Tap to unlock',
       avatar: 'https://randomuser.me/api/portraits/women/12.jpg',
       type: 'Secret Viewer',
-      locked: true,
-      lastSeen: 'Recently'
+      locked: true
     },
     {
       id: 7,
       name: 'Secret Viewer',
       username: 'Tap to unlock',
       avatar: 'https://randomuser.me/api/portraits/men/18.jpg',
-      type: 'Secret Viewer',
-      locked: true,
-      lastSeen: 'Recently'
+      type: 'Friend',
+      locked: true
     },
     {
       id: 8,
@@ -73,8 +66,7 @@ const SecretStalkersContent = ({ onUnlock }) => {
       username: 'Tap to unlock',
       avatar: 'https://randomuser.me/api/portraits/women/28.jpg',
       type: 'Secret Viewer',
-      locked: true,
-      lastSeen: 'Recently'
+      locked: true
     }
   ]);
 
@@ -133,17 +125,9 @@ const SecretStalkersContent = ({ onUnlock }) => {
                 <div className="text-sm text-gray-500 mb-1">
                   {friend.locked ? 'Hidden identity' : friend.username}
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${
-                    friend.locked ? 'bg-orange-400 animate-pulse' : 'bg-green-400'
-                  }`}></div>
-                  <span className="text-xs text-gray-400">
-                    {friend.locked ? 'Recently active' : `Active ${friend.lastSeen}`}
-                  </span>
-                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center">
               <div className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
                 friend.type === 'Friend' 
                   ? 'bg-purple-100 text-purple-700 hover:bg-purple-200 group-hover:scale-105' 
@@ -151,22 +135,17 @@ const SecretStalkersContent = ({ onUnlock }) => {
               }`}>
                 {friend.type}
               </div>
-              {!friend.locked && (
-                <button className="p-2 bg-gray-100 rounded-full hover:bg-purple-100 hover:text-purple-600 transition-all duration-200 hover:scale-110">
-                  <MessageCircle className="w-4 h-4" />
-                </button>
-              )}
             </div>
           </div>
         ))}
       </div>
 
       {/* Load More */}
-      <div className="px-4 py-6 border-t border-gray-100 bg-gradient-to-br from-gray-50 to-purple-50">
-        <button className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
+      <div className="px-4 py-6 border-t border-gray-100">
+        <button className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl">
           <div className="flex items-center justify-center gap-2">
-            <span>🔍</span>
-            <span>Discover more secret viewers</span>
+            <Search className="w-4 h-4" />
+            <span>Discover more viewers</span>
           </div>
         </button>
       </div>
