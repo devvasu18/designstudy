@@ -8,8 +8,22 @@ const StoryModal = ({ isOpen, onClose, story }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [currentUserIndex, setCurrentUserIndex] = useState(0);
   const isMountedRef = useRef(true);
   const currentIndexRef = useRef(0);
+
+  // Clean swipe handling states
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+
+  // All available users in order
+  const allUsers = [
+    { id: 2, username: 'priya', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
+    { id: 3, username: 'rahul', avatar: 'https://randomuser.me/api/portraits/men/22.jpg' },
+    { id: 4, username: 'anjali', avatar: 'https://randomuser.me/api/portraits/men/67.jpg' },
+    { id: 5, username: 'arjun', avatar: 'https://randomuser.me/api/portraits/men/45.jpg' },
+    { id: 6, username: 'kavya', avatar: 'https://randomuser.me/api/portraits/women/33.jpg' },
+  ];
 
   // Demo content for each user
   const getStoryContent = (username) => {
@@ -110,7 +124,8 @@ const StoryModal = ({ isOpen, onClose, story }) => {
     ];
   };
 
-  const processedContent = story ? getStoryContent(story.username) : [];
+  const processedContent = story ? getStoryContent(allUsers[currentUserIndex]?.username || story.username) : [];
+  const currentUser = allUsers[currentUserIndex] || story;
 
   // Cleanup on unmount
   useEffect(() => {
@@ -124,6 +139,18 @@ const StoryModal = ({ isOpen, onClose, story }) => {
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
+  // Set initial user index when story opens
+  useEffect(() => {
+    if (isOpen && story) {
+      const userIndex = allUsers.findIndex(user => user.id === story.id);
+      setCurrentUserIndex(userIndex !== -1 ? userIndex : 0);
+      setCurrentIndex(0);
+      setProgress(0);
+      setIsPlaying(true);
+      setIsTransitioning(false);
+    }
+  }, [isOpen, story]);
+
   useEffect(() => {
     if (!isOpen || !isPlaying || processedContent.length === 0) return;
 
@@ -132,6 +159,8 @@ const StoryModal = ({ isOpen, onClose, story }) => {
         clearInterval(timer);
         return;
       }
+      
+      // Don't progress if user is swiping
       
       setProgress((prev) => {
         const currentIdx = currentIndexRef.current;
@@ -152,14 +181,30 @@ const StoryModal = ({ isOpen, onClose, story }) => {
             }
             return 0; // Reset progress immediately for auto-advance
           } else {
-            // Clear timer before closing to prevent state updates after unmount
-            clearInterval(timer);
-            setTimeout(() => {
+            // All stories for current user completed - move to next user
+            if (currentUserIndex < allUsers.length - 1) {
+              // Move to next user
               if (isMountedRef.current) {
-                onClose();
+                setIsTransitioning(true);
+                setCurrentUserIndex(prev => prev + 1);
+                setCurrentIndex(0);
+                setTimeout(() => {
+                  if (isMountedRef.current) {
+                    setIsTransitioning(false);
+                  }
+                }, 100);
               }
-            }, 100);
-            return 100;
+              return 0; // Reset progress for new user
+            } else {
+              // All users completed - close modal
+              clearInterval(timer);
+              setTimeout(() => {
+                if (isMountedRef.current) {
+                  onClose();
+                }
+              }, 100);
+              return 100;
+            }
           }
         }
         return newProgress;
@@ -169,13 +214,11 @@ const StoryModal = ({ isOpen, onClose, story }) => {
     return () => {
       clearInterval(timer);
     };
-  }, [isOpen, isPlaying, onClose, processedContent]);
+  }, [isOpen, isPlaying, onClose, processedContent, currentUserIndex]);
 
   useEffect(() => {
     if (isOpen) {
-      setCurrentIndex(0);
-      currentIndexRef.current = 0;
-      setProgress(0);
+      // Reset states but don't override user index set above
       setIsPlaying(true);
       setIsTransitioning(false);
     } else {
@@ -185,6 +228,7 @@ const StoryModal = ({ isOpen, onClose, story }) => {
       setProgress(0);
       setIsPlaying(true);
       setIsTransitioning(false);
+      setCurrentUserIndex(0);
     }
   }, [isOpen]);
 
@@ -201,7 +245,21 @@ const StoryModal = ({ isOpen, onClose, story }) => {
         }
       }, 150);
     } else {
-      onClose();
+      // Current user's stories completed - move to next user
+      if (currentUserIndex < allUsers.length - 1) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setCurrentUserIndex(prev => prev + 1);
+            setCurrentIndex(0);
+            setProgress(0);
+            setIsTransitioning(false);
+          }
+        }, 150);
+      } else {
+        // All users completed - close modal
+        onClose();
+      }
     }
   };
 
@@ -217,6 +275,20 @@ const StoryModal = ({ isOpen, onClose, story }) => {
           setIsTransitioning(false);
         }
       }, 150);
+    } else {
+      // At first story of current user - go to previous user's last story
+      if (currentUserIndex > 0) {
+        const prevUserContent = getStoryContent(allUsers[currentUserIndex - 1]?.username);
+        setIsTransitioning(true);
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setCurrentUserIndex(prev => prev - 1);
+            setCurrentIndex(prevUserContent.length - 1);
+            setProgress(0);
+            setIsTransitioning(false);
+          }
+        }, 150);
+      }
     }
   };
 
@@ -226,6 +298,38 @@ const StoryModal = ({ isOpen, onClose, story }) => {
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
+  };
+
+  // Clean swipe handling functions
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > 50; // swipe left = next
+    const isRightSwipe = distance < -50; // swipe right = previous
+
+    console.log('Swipe detected:', { distance, isLeftSwipe, isRightSwipe });
+
+    if (isLeftSwipe) {
+      console.log('Swiping to next story/user');
+      handleNext();
+    }
+    if (isRightSwipe) {
+      console.log('Swiping to previous story/user');
+      handlePrevious();
+    }
+
+    // Reset touch positions
+    setTouchStartX(null);
+    setTouchEndX(null);
   };
 
   if (!isOpen || !story) return null;
@@ -273,11 +377,11 @@ const StoryModal = ({ isOpen, onClose, story }) => {
             </button>
             <div className="flex items-center space-x-2">
               <img
-                src={story.avatar}
-                alt={story.username}
+                src={currentUser.avatar}
+                alt={currentUser.username}
                 className="w-8 h-8 rounded-full border-2 border-white"
               />
-              <span className="text-white font-medium">{story.username}</span>
+              <span className="text-white font-medium">{currentUser.username}</span>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -294,12 +398,19 @@ const StoryModal = ({ isOpen, onClose, story }) => {
         </div>
 
         {/* Content */}
-        <div className="relative w-full h-full">
+        <div 
+          className="relative w-full h-full"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {currentStory?.type === 'image' ? (
             <img
               src={currentStory.url}
               alt="Story content"
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                isTransitioning ? 'opacity-50' : 'opacity-100'
+              }`}
               onError={(e) => {
                 console.error(`Image loading error for story ${currentIndex + 1}:`, e.target.src);
                 e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=700&fit=crop';
@@ -308,7 +419,9 @@ const StoryModal = ({ isOpen, onClose, story }) => {
           ) : (
             <video
               src={currentStory?.url}
-              className="w-full h-full object-cover"
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                isTransitioning ? 'opacity-50' : 'opacity-100'
+              }`}
               autoPlay
               muted={isMuted}
               loop
@@ -317,23 +430,6 @@ const StoryModal = ({ isOpen, onClose, story }) => {
               }}
             />
           )}
-
-          {/* Navigation areas */}
-          <div
-            className="absolute left-0 top-0 w-1/3 h-full z-10 cursor-pointer"
-            onClick={handlePrevious}
-          />
-          <div
-            className="absolute right-0 top-0 w-1/3 h-full z-10 cursor-pointer"
-            onClick={handleNext}
-          />
-          <div
-            className="absolute inset-0 z-5 cursor-pointer"
-            onMouseDown={() => setIsPlaying(false)}
-            onMouseUp={() => setIsPlaying(true)}
-            onTouchStart={() => setIsPlaying(false)}
-            onTouchEnd={() => setIsPlaying(true)}
-          />
         </div>
 
         {/* Play/Pause indicator */}
@@ -348,8 +444,15 @@ const StoryModal = ({ isOpen, onClose, story }) => {
         {/* Story transition indicator */}
         {progress > 95 && currentIndex < processedContent.length - 1 && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-            <div className="bg-black bg-opacity-50 px-3 py-1 rounded-full text-white text-xs animate-bounce">
-              Next story loading...
+           
+          </div>
+        )}
+
+        {/* User transition indicator */}
+        {currentIndex === processedContent.length - 1 && progress > 95 && currentUserIndex < allUsers.length - 1 && (
+          <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="bg-black bg-opacity-50 px-4 py-2 rounded-full text-white text-xs animate-pulse">
+              Next: {allUsers[currentUserIndex + 1]?.username} →
             </div>
           </div>
         )}
