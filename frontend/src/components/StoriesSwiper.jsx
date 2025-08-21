@@ -1,6 +1,6 @@
-"use client";
-import { useState } from "react";
-import { Plus } from "lucide-react";
+'use client';
+import { useState } from 'react';
+import { Plus } from 'lucide-react';
 
 const StoriesSwiper = ({ onStoryClick, onAddStory, isSticky }) => {
   const [stories] = useState([
@@ -19,7 +19,7 @@ const StoriesSwiper = ({ onStoryClick, onAddStory, isSticky }) => {
         <h2 className="text-lg font-bold text-gray-800 px-1">Stories</h2>
         <div className="text-xs text-purple-600 font-medium cursor-pointer hover:text-purple-800">View all</div>
       </div>
-      <div className="flex space-x-3 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden">
+      <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
         {stories.map((story) => (
           <button 
             key={story.id}

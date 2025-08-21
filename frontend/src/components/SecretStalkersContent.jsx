@@ -1,6 +1,7 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
 import { MoreVertical, Lock, Heart, MessageCircle, Share, Plus, Search, Bell } from 'lucide-react';
+
 const SecretStalkersContent = ({ onUnlock }) => {
   const [friends, setFriends] = useState([
     {
@@ -52,7 +53,7 @@ const SecretStalkersContent = ({ onUnlock }) => {
       id: 6,
       name: 'Secret Viewer',
       username: 'Tap to unlock',
-      avatar: 'https://randomuser.me/api/portraits/women/89.jpg',
+      avatar: 'https://randomuser.me/api/portraits/women/12.jpg',
       type: 'Secret Viewer',
       locked: true,
       lastSeen: 'Recently'
@@ -61,7 +62,7 @@ const SecretStalkersContent = ({ onUnlock }) => {
       id: 7,
       name: 'Secret Viewer',
       username: 'Tap to unlock',
-      avatar: 'https://randomuser.me/api/portraits/men/67.jpg',
+      avatar: 'https://randomuser.me/api/portraits/men/18.jpg',
       type: 'Secret Viewer',
       locked: true,
       lastSeen: 'Recently'
@@ -70,7 +71,7 @@ const SecretStalkersContent = ({ onUnlock }) => {
       id: 8,
       name: 'Secret Viewer',
       username: 'Tap to unlock',
-      avatar: 'https://randomuser.me/api/portraits/women/23.jpg',
+      avatar: 'https://randomuser.me/api/portraits/women/28.jpg',
       type: 'Secret Viewer',
       locked: true,
       lastSeen: 'Recently'
@@ -83,7 +84,7 @@ const SecretStalkersContent = ({ onUnlock }) => {
         ? { ...friend, locked: false, name: 'Mystery User', username: '@mystery.user' }
         : friend
     ));
-    onUnlock(friendId);
+    onUnlock?.(friendId);
   };
 
   return (
@@ -101,7 +102,7 @@ const SecretStalkersContent = ({ onUnlock }) => {
       
       {/* Friends List */}
       <div className="space-y-1">
-        {friends.map((friend, index) => (
+        {friends.map((friend) => (
           <div 
             key={friend.id} 
             className="flex items-center justify-between px-4 py-4 hover:bg-gray-50 transition-all duration-200 cursor-pointer border-b border-gray-50 last:border-b-0 group"
@@ -165,11 +166,12 @@ const SecretStalkersContent = ({ onUnlock }) => {
         <button className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
           <div className="flex items-center justify-center gap-2">
             <span>🔍</span>
-            <span>Discover more secret Viewers</span>
+            <span>Discover more secret viewers</span>
           </div>
         </button>
       </div>
     </div>
   );
 };
+
 export default SecretStalkersContent;

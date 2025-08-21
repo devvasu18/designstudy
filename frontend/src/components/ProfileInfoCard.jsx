@@ -1,6 +1,6 @@
+'use client';
+import { useState } from 'react';
 
-"use client";
-import { useState } from "react";
 const ProfileInfoCard = ({ onFollow, isFollowing }) => {
   const [showFullBio, setShowFullBio] = useState(false);
   

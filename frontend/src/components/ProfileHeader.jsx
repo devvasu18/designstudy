@@ -1,10 +1,11 @@
-import React from 'react';
+'use client';
 import { MoreVertical } from 'lucide-react';
-const ProfileHeader = ({ onMore, isScrolled }) => {
-  if (!isScrolled) return null;
-  
+
+const ProfileHeader = ({ onMore, isScrolled = false }) => {
   return (
-    <div className="bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-100 sticky top-0 z-40 shadow-sm transition-all duration-300 safe-area-top">
+    <div className={`bg-white/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-gray-100 sticky top-0 z-40 shadow-sm transition-all duration-300 ${
+      isScrolled ? 'opacity-100' : 'opacity-0 pointer-events-none'
+    }`}>
       <div className="w-6"></div>
       <div className="flex items-center space-x-2">
         <span className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -20,4 +21,5 @@ const ProfileHeader = ({ onMore, isScrolled }) => {
     </div>
   );
 };
+
 export default ProfileHeader;

@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Share } from 'lucide-react';
+
 const StoryViewModal = ({ story, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
@@ -43,12 +45,12 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
   ];
 
   useEffect(() => {
-    if (story) {
+    if (story && isOpen) {
       const userIndex = storyUsers.findIndex(user => user.id === story.id);
       setCurrentUserIndex(userIndex !== -1 ? userIndex : 0);
       setCurrentIndex(0);
     }
-  }, [story]);
+  }, [story, isOpen]);
 
   const currentUser = storyUsers[currentUserIndex];
   const storyImages = currentUser?.images || [];
@@ -60,6 +62,8 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       if (currentUserIndex < storyUsers.length - 1) {
         setCurrentUserIndex(prev => prev + 1);
         setCurrentIndex(0);
+      } else {
+        onClose();
       }
     }
   };
@@ -73,21 +77,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
         const prevUser = storyUsers[currentUserIndex - 1];
         setCurrentIndex(prevUser.images.length - 1);
       }
-    }
-  };
-
-  const nextUser = () => {
-    if (currentUserIndex < storyUsers.length - 1) {
-      setCurrentUserIndex(prev => prev + 1);
-      setCurrentIndex(0);
-    }
-  };
-
-  const prevUser = () => {
-    if (currentUserIndex > 0) {
-      setCurrentUserIndex(prev => prev - 1);
-      const prevUser = storyUsers[currentUserIndex - 1];
-      setCurrentIndex(prevUser.images.length - 1);
     }
   };
 
@@ -107,10 +96,10 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
     const isRightSwipe = distance < -50;
 
     if (isLeftSwipe) {
-      nextUser();
+      nextStory();
     }
     if (isRightSwipe) {
-      prevUser();
+      prevStory();
     }
 
     setTouchStartX(null);
@@ -122,7 +111,7 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-4 z-10 safe-area-top">
+      <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/70 to-transparent p-4 z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img
@@ -187,7 +176,7 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       </div>
 
       {/* Bottom Actions */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 safe-area-bottom">
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
         <div className="flex items-center justify-between max-w-md mx-auto">
           <div className="flex space-x-3">
             <button className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110">
@@ -208,4 +197,5 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
     </div>
   );
 };
+
 export default StoryViewModal;
