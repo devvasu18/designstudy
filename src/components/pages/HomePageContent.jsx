@@ -10,10 +10,6 @@ export default function HomePageContent() {
   const isStoriesSticky = useScrollPosition(50);
   const { setSelectedStory, showNotification } = useAppContext();
 
-  const handleAddStory = () => {
-    showNotification("📸 Add story feature coming soon!", "info");
-  };
-
   const handleUnlock = (friendId) => {
     showNotification(`🎉 Secret stalker revealed! Friend ID: ${friendId}`, "success");
   };
@@ -30,7 +26,6 @@ export default function HomePageContent() {
       <StoriesSwiper
         isSticky={isStoriesSticky}
         onStoryClick={handleStoryClick}
-        onAddStory={handleAddStory}
       />
       
       <SecretStalkersContent

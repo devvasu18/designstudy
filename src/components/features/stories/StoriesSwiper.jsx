@@ -1,10 +1,8 @@
 'use client';
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
 
-const StoriesSwiper = ({ onStoryClick, onAddStory, isSticky }) => {
+const StoriesSwiper = ({ onStoryClick, isSticky }) => {
   const [stories] = useState([
-    { id: 1, username: 'vasudev', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', hasNewStory: false, isOwn: true },
     { id: 2, username: 'priya', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasNewStory: true },
     { id: 3, username: 'rahul', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasNewStory: false },
     { id: 4, username: 'anjali', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', hasNewStory: true },
@@ -23,41 +21,25 @@ const StoriesSwiper = ({ onStoryClick, onAddStory, isSticky }) => {
         {stories.map((story) => (
           <button 
             key={story.id}
-            onClick={() => {
-              console.log("Story button clicked:", story); // Debug log
-              if (story.isOwn) {
-                console.log("Own story clicked, calling onAddStory"); // Debug log
-                onAddStory?.();
-              } else {
-                console.log("Other story clicked, calling onStoryClick"); // Debug log
-                onStoryClick?.(story);
-              }
-            }}
+            onClick={() => onStoryClick?.(story)}
             className="flex flex-col items-center space-y-2 flex-shrink-0 group"
           >
             <div className="relative">
               <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
                 story.hasNewStory
                   ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 group-hover:scale-110 shadow-lg'
-                  : story.isOwn
-                  ? 'bg-gradient-to-r from-gray-300 to-gray-400 group-hover:scale-110 shadow-md'
                   : 'bg-gray-200 group-hover:scale-105'
               }`}>
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-white p-0.5">
                   <img src={story.avatar} alt={story.username} className="w-full h-full object-cover rounded-full" />
                 </div>
               </div>
-              {story.isOwn && (
-                <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full border-2 border-white flex items-center justify-center shadow-md">
-                  <Plus className="w-2.5 h-2.5 text-white" />
-                </div>
-              )}
-              {story.hasNewStory && !story.isOwn && (
+              {story.hasNewStory && (
                 <div className="absolute top-0.5 right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white shadow-sm animate-pulse"></div>
               )}
             </div>
             <span className="text-xs text-gray-700 truncate max-w-[60px] block group-hover:text-purple-600">
-              {story.isOwn ? 'Your story' : story.username}
+              {story.username}
             </span>
           </button>
         ))}

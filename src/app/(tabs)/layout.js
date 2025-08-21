@@ -7,7 +7,6 @@ import { AppContextProvider, useAppContext } from "@/context/AppContext";
 // shared UI components
 import BottomNavigation from "@/components/ui/BottomNavigation";
 import NotificationToast from "@/components/ui/NotificationToast";
-import ProfileHeader from "@/components/features/profile/ProfileHeader";
 import StoryViewModalSimple from "@/components/features/stories/StoryViewModalSimple";
 import DisablePinchZoom from "@/components/ui/DisablePinchZoom";
 
@@ -48,9 +47,7 @@ function TabsLayoutContent({ children }) {
           boxSizing: 'border-box'
         }}
       >
-       
-        <ProfileHeader isScrolled={isHeaderScrolled} />
-        
+        {/* Main content area */}
         <main 
           className="min-h-[calc(100vh-160px)]"
           style={{
