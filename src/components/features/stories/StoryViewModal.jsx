@@ -3,7 +3,6 @@ import { Heart, MessageCircle, Share } from 'lucide-react';
 const StoryViewModal = ({ story, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
-  const [swipeDirection, setSwipeDirection] = useState(null); // For visual feedback
   const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
   const touchEndRef = useRef({ x: 0, y: 0, time: 0 });
   
@@ -215,13 +214,9 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
 
     // Vertical swipe detection for closing modal
     if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > minSwipeDistance) {
-      // Show closing feedback
-      setSwipeDirection('close');
-      setTimeout(() => setSwipeDirection(null), 200);
-      
       // Swipe down or up to close
       if (Math.abs(deltaY) > minSwipeDistance) {
-        setTimeout(() => onClose(), 150); // Slight delay for visual feedback
+        onClose();
         return;
       }
     }
@@ -232,13 +227,9 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       if (Math.abs(deltaX) < 120) {
         if (deltaX > 0) {
           // Right swipe - previous story (same user only)
-          setSwipeDirection('prev-story');
-          setTimeout(() => setSwipeDirection(null), 200);
           navigateToPrevStoryInUser();
         } else {
           // Left swipe - next story (same user only)
-          setSwipeDirection('next-story');
-          setTimeout(() => setSwipeDirection(null), 200);
           navigateToNextStoryInUser();
         }
       } 
@@ -246,13 +237,9 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       else {
         if (deltaX > 0) {
           // Right swipe - previous user
-          setSwipeDirection('prev-user');
-          setTimeout(() => setSwipeDirection(null), 200);
           navigateToPrevUser();
         } else {
           // Left swipe - next user
-          setSwipeDirection('next-user');
-          setTimeout(() => setSwipeDirection(null), 200);
           navigateToNextUser();
         }
       }
@@ -343,26 +330,16 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
         <div className="absolute inset-0 z-10 flex">
           {/* Left tap zone */}
           <div 
-            className="w-1/2 h-full flex items-center justify-start pl-4"
+            className="w-1/2 h-full"
             title="Previous story"
           >
-            <div className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </div>
           </div>
           
           {/* Right tap zone */}
           <div 
-            className="w-1/2 h-full flex items-center justify-end pr-4"
+            className="w-1/2 h-full"
             title="Next story"
           >
-            <div className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
           </div>
         </div>
 
@@ -373,39 +350,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
           className="w-full h-full object-cover"
           loading="lazy"
         />
-
-        {/* Swipe feedback overlay */}
-        {swipeDirection && (
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
-            <div className="bg-white/90 rounded-full p-4 animate-pulse">
-              {swipeDirection === 'close' && (
-                <div className="text-2xl">❌</div>
-              )}
-              {swipeDirection === 'next-story' && (
-                <div className="text-2xl">➡️</div>
-              )}
-              {swipeDirection === 'prev-story' && (
-                <div className="text-2xl">⬅️</div>
-              )}
-              {swipeDirection === 'next-user' && (
-                <div className="text-2xl">⏭️</div>
-              )}
-              {swipeDirection === 'prev-user' && (
-                <div className="text-2xl">⏮️</div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Gesture hint overlay - appears briefly */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white/60 text-xs text-center pointer-events-none opacity-0 hover:opacity-100 transition-opacity">
-          <div className="bg-black/40 backdrop-blur-sm rounded-lg p-2 space-y-1">
-            <div>👆 Tap left/right</div>
-            <div>👈👉 Small swipe = same user</div>
-            <div>👈👉 Big swipe = change user</div>
-            <div>👆👇 Swipe up/down = close</div>
-          </div>
-        </div>
       </div>
 
       {/* Bottom Actions */}

@@ -87,12 +87,12 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
           {/* Name and Info */}
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-xl font-bold text-gray-900">Vasu Dev</h1>
+              <h1 className="text-xl font-semibold text-gray-900 tracking-tight">Vasu Dev</h1>
             </div>
-            <p className="text-sm text-gray-600 mb-2">@vasudev </p>
+            <p className="text-sm text-gray-600 mb-2 font-medium">@vasudev</p>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Last updated:</span>
-              <span className="text-xs font-medium text-gray-600">{new Date().toLocaleString('en-US', { 
+              <span className="text-xs text-gray-500 font-medium">Last updated:</span>
+              <span className="text-xs font-semibold text-gray-700 tracking-wide">{new Date().toLocaleString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit', 
                 day: '2-digit', 
@@ -106,25 +106,25 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
         {/* Clean Stats */}
         <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
-            <div className="text-3xl font-bold text-purple-500 mb-1">{animatedStats.followers}</div>
-            <div className="text-xs text-gray-600 font-medium">Followers</div>
+            <div className="text-3xl font-extrabold text-purple-500 mb-1 tracking-tight">{animatedStats.followers}</div>
+            <div className="text-xs text-gray-600 font-semibold tracking-wide uppercase">Followers</div>
           </div>
           <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
-            <div className="text-3xl font-bold text-purple-500 mb-1">{animatedStats.following}</div>
-            <div className="text-xs text-gray-600 font-medium">Following</div>
+            <div className="text-3xl font-extrabold text-purple-500 mb-1 tracking-tight">{animatedStats.following}</div>
+            <div className="text-xs text-gray-600 font-semibold tracking-wide uppercase">Following</div>
           </div>
           <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
-            <div className="text-3xl font-bold text-purple-500 mb-1">{animatedStats.posts}</div>
-            <div className="text-xs text-gray-600 font-medium">Posts</div>
+            <div className="text-3xl font-extrabold text-purple-500 mb-1 tracking-tight">{animatedStats.posts}</div>
+            <div className="text-xs text-gray-600 font-semibold tracking-wide uppercase">Posts</div>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="flex gap-2">
-          <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg">
+          <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg tracking-wide">
             Edit Profile
           </button>
-          <button className="flex-1 bg-white/70 hover:bg-white text-gray-700 text-sm font-medium py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg border border-gray-200">
+          <button className="flex-1 bg-white/70 hover:bg-white text-gray-700 text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg border border-gray-200 tracking-wide">
             Share Profile
           </button>
         </div>

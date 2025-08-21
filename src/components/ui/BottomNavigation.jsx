@@ -31,7 +31,7 @@ const BottamNavigation = ({ activeTab, setActiveTab }) => {
               }`}
             >
               <IconComponent size={18} />
-              <span className="text-xs">{tab.label}</span>
+              <span className="text-xs font-medium tracking-wide">{tab.label}</span>
             </button>
           );
         })}

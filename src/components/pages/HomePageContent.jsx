@@ -3,7 +3,6 @@ import { useAppContext } from "@/context/AppContext";
 import ProfileInfoCard from "@/components/features/profile/ProfileInfoCard";
 import StoriesSwiper from "@/components/features/stories/StoriesSwiper";
 import SecretStalkersContent from "@/components/sections/SecretStalkersContent";
-import StoryModal from "@/components/modals/StoryModal";
 import useScrollPosition from "@/hooks/useScrollPosition";
 
 export default function HomePageContent() {
@@ -11,11 +10,7 @@ export default function HomePageContent() {
   const isSecretViewersSticky = useScrollPosition(120); // Adjust based on stories height
   const { 
     setSelectedStory, 
-    showNotification, 
-    isStoryModalOpen, 
-    currentStory, 
-    openStoryModal, 
-    closeStoryModal 
+    showNotification
   } = useAppContext();
 
   const handleUnlock = (friendId) => {
@@ -23,8 +18,8 @@ export default function HomePageContent() {
   };
 
   const handleStoryClick = (story) => {
-    console.log("Story clicked:", story);
-    openStoryModal(story);
+    console.log("Home Story clicked:", story);
+    setSelectedStory(story);
   };
 
   return (
@@ -39,13 +34,6 @@ export default function HomePageContent() {
       <SecretStalkersContent
         isSticky={isSecretViewersSticky}
         onUnlock={handleUnlock}
-      />
-
-      {/* Story Modal */}
-      <StoryModal
-        isOpen={isStoryModalOpen}
-        onClose={closeStoryModal}
-        story={currentStory}
       />
     </div>
   );
