@@ -23,7 +23,16 @@ const StoriesSwiper = ({ onStoryClick, onAddStory, isSticky }) => {
         {stories.map((story) => (
           <button 
             key={story.id}
-            onClick={() => story.isOwn ? onAddStory?.() : onStoryClick?.(story)}
+            onClick={() => {
+              console.log("Story button clicked:", story); // Debug log
+              if (story.isOwn) {
+                console.log("Own story clicked, calling onAddStory"); // Debug log
+                onAddStory?.();
+              } else {
+                console.log("Other story clicked, calling onStoryClick"); // Debug log
+                onStoryClick?.(story);
+              }
+            }}
             className="flex flex-col items-center space-y-2 flex-shrink-0 group"
           >
             <div className="relative">

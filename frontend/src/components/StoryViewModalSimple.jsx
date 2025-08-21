@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Share, ArrowLeft, Volume2, VolumeX, MoreHorizontal } from 'lucide-react';
+import React from 'react';
 
-const StoryViewModal = ({ story, onClose }) => {
+const StoryViewModalSimple = ({ story, onClose }) => {
   // Simple debugging version
   if (!story) {
     console.log("StoryViewModal: No story provided");
@@ -36,6 +35,4 @@ const StoryViewModal = ({ story, onClose }) => {
   );
 };
 
-export default StoryViewModal;
-
-export default StoryViewModal;
+export default StoryViewModalSimple;
