@@ -1,44 +1,27 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Search, Heart, MessageCircle, UserPlus, Star } from 'lucide-react';
-import { discoverApi } from '@/services/api';
+import { Search, Heart, MessageCircle, UserPlus, Star, Home, BarChart3, User } from 'lucide-react';
 
 const DiscoverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [followedUsers, setFollowedUsers] = useState(new Set());
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchUsers();
+    // Mock data matching the screenshot
+    setUsers([
+      { id: 1, username: 'divya_holi', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasStory: true, isVerified: false },
+      { id: 2, username: 'tejasvini', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasStory: true, isVerified: false },
+      { id: 3, username: 'maahi_upa', avatar: 'https://randomuser.me/api/portraits/women/67.jpg', hasStory: true, isVerified: false },
+      { id: 4, username: 'aman_math', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', hasStory: true, isVerified: false },
+      { id: 5, username: 'hiteshgehi', avatar: 'https://randomuser.me/api/portraits/men/45.jpg', hasStory: true, isVerified: false },
+      { id: 6, username: 'rumit.meht', avatar: 'https://randomuser.me/api/portraits/men/28.jpg', hasStory: true, isVerified: false },
+      { id: 7, username: 'dilipksola', avatar: 'https://randomuser.me/api/portraits/women/33.jpg', hasStory: true, isVerified: false },
+      { id: 8, username: 'rajveer948', avatar: 'https://randomuser.me/api/portraits/men/41.jpg', hasStory: true, isVerified: false },
+      { id: 9, username: 'sharma_mon', avatar: 'https://randomuser.me/api/portraits/women/29.jpg', hasStory: true, isVerified: false },
+    ]);
   }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await discoverApi.getUsers();
-      // Transform API data to match component expectations
-      const transformedUsers = response.data.map(user => ({
-        id: user.id,
-        username: user.username,
-        avatar: user.avatar,
-        hasStory: true,
-        isVerified: user.isVerified
-      }));
-      setUsers(transformedUsers);
-    } catch (error) {
-      console.error('Failed to fetch users:', error);
-      // Fallback to mock data if API fails
-      setUsers([
-        { id: 1, username: 'santoshsha', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasStory: true, isVerified: false },
-        { id: 2, username: 'bhaktipath', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasStory: true, isVerified: true },
-        { id: 3, username: 'butatidham', avatar: 'https://randomuser.me/api/portraits/men/67.jpg', hasStory: true, isVerified: false },
-        { id: 4, username: 'karni_mata', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', hasStory: true, isVerified: false },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredUsers = users.filter(user => 
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -56,16 +39,15 @@ const DiscoverPage = () => {
 
   const handleStoryClick = (user) => {
     console.log('Story clicked:', user);
-    // Handle story viewing logic here
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white min-h-screen">
+    <div className="max-w-md mx-auto bg-white min-h-screen relative">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 safe-area-top">
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-100">
         {/* Title */}
-        <div className="px-4 py-4">
-          <h1 className="text-xl font-bold text-gray-900 text-center">Secret Stories</h1>
+        <div className="px-4 py-6">
+          <h1 className="text-2xl font-bold text-gray-900 text-center">Secret Stories</h1>
         </div>
 
         {/* Search Bar */}
@@ -77,29 +59,36 @@ const DiscoverPage = () => {
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-2xl border-none outline-none text-sm placeholder-gray-500 focus:bg-gray-200 transition-colors duration-200"
+              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-full border-none outline-none text-sm placeholder-gray-500 focus:bg-gray-200 transition-colors duration-200"
             />
           </div>
         </div>
       </div>
 
-      {/* Users Grid */}
-      <div className="px-4 py-4">
-        <div className="grid grid-cols-3 gap-4">
-          {filteredUsers.map((user) => (
-            <div key={user.id} className="flex flex-col items-center group">
+      {/* Users Grid with Floating Animation */}
+      <div className="px-6 py-6">
+        <div className="grid grid-cols-3 gap-6">
+          {filteredUsers.map((user, index) => (
+            <div 
+              key={user.id} 
+              className="flex flex-col items-center group"
+              style={{
+                animation: `float ${3 + (index % 3) * 0.5}s ease-in-out infinite`,
+                animationDelay: `${index * 0.2}s`
+              }}
+            >
               {/* Profile Picture with Story Ring */}
-              <div className="relative mb-3">
+              <div className="relative mb-2">
                 <button
                   onClick={() => handleStoryClick(user)}
-                  className="relative block"
+                  className="relative block transform transition-all duration-300 hover:scale-110"
                 >
-                  <div className={`w-20 h-20 rounded-full p-0.5 transition-all duration-300 group-hover:scale-105 ${
+                  <div className={`w-20 h-20 rounded-full p-1 transition-all duration-300 ${
                     user.hasStory 
-                      ? 'bg-gradient-to-tr from-purple-400 via-pink-400 to-red-400 shadow-lg' 
+                      ? 'bg-gradient-to-tr from-purple-400 via-pink-400 to-red-400 shadow-lg animate-pulse' 
                       : 'bg-gray-200'
                   }`}>
-                    <div className="relative w-full h-full rounded-full overflow-hidden bg-white p-0.5">
+                    <div className="relative w-full h-full rounded-full overflow-hidden bg-white">
                       <img
                         src={user.avatar}
                         alt={user.username}
@@ -112,7 +101,7 @@ const DiscoverPage = () => {
 
                 {/* Verified Badge */}
                 {user.isVerified && (
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center shadow-md">
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center shadow-md animate-bounce">
                     <div className="w-3 h-3 bg-white rounded-full flex items-center justify-center">
                       <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                     </div>
@@ -122,14 +111,14 @@ const DiscoverPage = () => {
                 {/* Follow Button */}
                 <button
                   onClick={() => handleFollow(user.id)}
-                  className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 flex items-center justify-center ${
+                  className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-125 flex items-center justify-center transform hover:rotate-12 ${
                     followedUsers.has(user.id)
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-green-500 text-white animate-pulse'
                       : 'bg-blue-500 text-white hover:bg-blue-600'
                   }`}
                 >
                   {followedUsers.has(user.id) ? (
-                    <div className="w-3 h-3 text-white">✓</div>
+                    <div className="w-3 h-3 text-white font-bold">✓</div>
                   ) : (
                     <UserPlus className="w-3 h-3" />
                   )}
@@ -142,141 +131,91 @@ const DiscoverPage = () => {
                   {user.username}
                 </p>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                <button className="p-1.5 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors">
-                  <Heart className="w-3 h-3" />
-                </button>
-                <button className="p-1.5 bg-blue-50 text-blue-500 rounded-full hover:bg-blue-100 transition-colors">
-                  <MessageCircle className="w-3 h-3" />
-                </button>
-              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Load More Button */}
-      <div className="px-4 py-6 pb-20">
-        <button className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-2xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-          <div className="flex items-center justify-center gap-2">
-            <Star className="w-4 h-4" />
-            <span>Discover More Stories</span>
-          </div>
-        </button>
-      </div>
-
       {/* Bottom Navigation Space */}
       <div className="h-20"></div>
+
+      {/* Floating Animation Styles */}
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          25% {
+            transform: translateY(-10px) rotate(1deg);
+          }
+          50% {
+            transform: translateY(-5px) rotate(-1deg);
+          }
+          75% {
+            transform: translateY(-15px) rotate(0.5deg);
+          }
+        }
+        
+        @keyframes bubble-float {
+          0%, 100% {
+            transform: translateY(0px) scale(1);
+          }
+          50% {
+            transform: translateY(-20px) scale(1.05);
+          }
+        }
+        
+        .animate-bubble-float {
+          animation: bubble-float 4s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };
 
-// Updated main app component with tab handling
-const SocialProfileApp = () => {
-  const [activeTab, setActiveTab] = useState('discover');
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [notification, setNotification] = useState(null);
-  const [scrollY, setScrollY] = useState(0);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [storiesSticky, setStoriesSticky] = useState(false);
-  const [selectedStory, setSelectedStory] = useState(null);
-  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
+// Bottom Navigation Component
+const BottomNavigation = ({ activeTab, onTabChange }) => {
+  const tabs = [
+    { id: 'home', icon: Home, label: 'Home' },
+    { id: 'discover', icon: Search, label: 'Discover' },
+    { id: 'stats', icon: BarChart3, label: 'Stats' },
+    { id: 'profile', icon: User, label: 'Profile' },
+  ];
 
-  const BottomNavigation = ({ activeTab, onTabChange }) => {
-    const tabs = [
-      { id: 'home', icon: '🏠', label: 'Home' },
-      { id: 'discover', icon: '🔍', label: 'Discover' },
-      { id: 'stats', icon: '📊', label: 'Stats' },
-      { id: 'profile', icon: '👤', label: 'Profile' },
-    ];
-
-    return (
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-200 px-4 py-3 z-50 safe-area-bottom">
-        <div className="flex justify-around items-center max-w-md mx-auto">
-          {tabs.map((tab) => (
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-200 px-4 py-3 z-50">
+      <div className="flex justify-around items-center max-w-md mx-auto">
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          return (
             <button 
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center space-y-1 p-3 rounded-2xl transition-all duration-300 ${
+              className={`flex flex-col items-center space-y-1 p-3 rounded-2xl transition-all duration-300 transform ${
                 activeTab === tab.id 
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white scale-110 shadow-lg transform' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-105'
+                  ? 'text-purple-500 scale-110 animate-pulse' 
+                  : 'text-gray-400 hover:text-gray-600 hover:scale-105'
               }`}
             >
-              <span className="text-xl">{tab.icon}</span>
-              <span className="text-xs font-semibold">{tab.label}</span>
+              <IconComponent className="w-6 h-6" />
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
-    );
-  };
-
-  const NotificationToast = ({ message, type, onClose }) => {
-    React.useEffect(() => {
-      const timer = setTimeout(onClose, 3000);
-      return () => clearTimeout(timer);
-    }, [onClose]);
-
-    return (
-      <div className={`fixed top-6 right-6 px-6 py-4 rounded-2xl shadow-2xl z-50 transform transition-all duration-300 backdrop-blur-lg ${
-        type === 'success' ? 'bg-green-500/90 text-white' : 'bg-purple-500/90 text-white'
-      }`}>
-        <div className="flex items-center gap-3">
-          <span className="text-lg">
-            {type === 'success' ? '✅' : 'ℹ️'}
-          </span>
-          <span className="font-medium">{message}</span>
-          <button 
-            onClick={onClose}
-            className="ml-2 text-white/80 hover:text-white transition-colors"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const showNotification = (message, type = 'success') => {
-    setNotification({ message, type });
-  };
-
-  const renderTabContent = () => {
-  switch (activeTab) {
-    case "home":
-      return <HomePageContent />;   // import from components/HomePageContent.jsx
-    case "discover":
-      return <DiscoverPage />;
-    case "stats":
-      return <StatsPage />;
-    case "profile":
-      return <ProfilePage />;
-    default:
-      return <HomePageContent />;
-  }
-};
-
-
-  return (
-    <div className="max-w-md mx-auto bg-gray-50 min-h-screen relative overflow-x-hidden">
-      {renderTabContent()}
-      
-      {/* Bottom Navigation */}
-      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-      
-      {/* Notification Toast */}
-      {notification && (
-        <NotificationToast 
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
     </div>
   );
 };
 
-export default DiscoverPage;
+// Main App Component
+const SocialProfileApp = () => {
+  const [activeTab, setActiveTab] = useState('discover');
+
+  return (
+    <div className="max-w-md mx-auto bg-gray-50 min-h-screen relative overflow-x-hidden">
+      <DiscoverPage />
+      <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+    </div>
+  );
+};
+
+export default SocialProfileApp;

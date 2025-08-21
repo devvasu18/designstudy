@@ -12,9 +12,9 @@ const StoryModal = ({ isOpen, onClose, story }) => {
   const isMountedRef = useRef(true);
   const currentIndexRef = useRef(0);
 
-  // Clean swipe handling states
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [touchEndX, setTouchEndX] = useState(null);
+  // Simple swipe detection
+  const [swipeStart, setSwipeStart] = useState(0);
+  const [swipeEnd, setSwipeEnd] = useState(0);
 
   // All available users in order
   const allUsers = [
@@ -300,36 +300,58 @@ const StoryModal = ({ isOpen, onClose, story }) => {
     setIsMuted(!isMuted);
   };
 
-  // Clean swipe handling functions
-  const handleTouchStart = (e) => {
-    setTouchStartX(e.targetTouches[0].clientX);
+  // Simple swipe handlers
+  const onSwipeStart = (e) => {
+    setSwipeStart(e.touches[0].clientX);
   };
 
-  const handleTouchMove = (e) => {
-    setTouchEndX(e.targetTouches[0].clientX);
+  const onSwipeMove = (e) => {
+    setSwipeEnd(e.touches[0].clientX);
   };
 
-  const handleTouchEnd = () => {
-    if (!touchStartX || !touchEndX) return;
+  const onSwipeEnd = () => {
+    if (!swipeStart || !swipeEnd) return;
     
-    const distance = touchStartX - touchEndX;
-    const isLeftSwipe = distance > 50; // swipe left = next
-    const isRightSwipe = distance < -50; // swipe right = previous
-
-    console.log('Swipe detected:', { distance, isLeftSwipe, isRightSwipe });
-
-    if (isLeftSwipe) {
-      console.log('Swiping to next story/user');
-      handleNext();
+    const swipeDistance = swipeStart - swipeEnd;
+    
+    // Left swipe (next user)
+    if (swipeDistance > 75) {
+      // Go directly to next user
+      if (currentUserIndex < allUsers.length - 1) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setCurrentUserIndex(prev => prev + 1);
+            setCurrentIndex(0);
+            setProgress(0);
+            setIsTransitioning(false);
+          }
+        }, 150);
+      } else {
+        onClose(); // Close if it's the last user
+      }
     }
-    if (isRightSwipe) {
-      console.log('Swiping to previous story/user');
-      handlePrevious();
+    
+    // Right swipe (previous user)  
+    if (swipeDistance < -75) {
+      // Go directly to previous user
+      if (currentUserIndex > 0) {
+        const prevUserContent = getStoryContent(allUsers[currentUserIndex - 1]?.username);
+        setIsTransitioning(true);
+        setTimeout(() => {
+          if (isMountedRef.current) {
+            setCurrentUserIndex(prev => prev - 1);
+            setCurrentIndex(0); // Start from first story of previous user
+            setProgress(0);
+            setIsTransitioning(false);
+          }
+        }, 150);
+      }
     }
-
-    // Reset touch positions
-    setTouchStartX(null);
-    setTouchEndX(null);
+    
+    // Reset
+    setSwipeStart(0);
+    setSwipeEnd(0);
   };
 
   if (!isOpen || !story) return null;
@@ -400,9 +422,9 @@ const StoryModal = ({ isOpen, onClose, story }) => {
         {/* Content */}
         <div 
           className="relative w-full h-full"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onTouchStart={onSwipeStart}
+          onTouchMove={onSwipeMove}
+          onTouchEnd={onSwipeEnd}
         >
           {currentStory?.type === 'image' ? (
             <img

@@ -1,5 +1,6 @@
 "use client";
 import { useAppContext } from "@/context/AppContext";
+import { Home, Search, BarChart3, User } from "lucide-react";
 
 const BottamNavigation = ({ activeTab, setActiveTab }) => {
   const { isStoryModalOpen } = useAppContext();
@@ -10,27 +11,30 @@ const BottamNavigation = ({ activeTab, setActiveTab }) => {
   }
 
   const tabs = [
-    { id: "home", icon: "🏠", label: "Home" },
-    { id: "discover", icon: "🔍", label: "Discover" },
-    { id: "stats", icon: "📊", label: "Stats" },
-    { id: "profile", icon: "👤", label: "Profile" },
+    { id: "home", icon: Home, label: "Home" },
+    { id: "discover", icon: Search, label: "Discover" },
+    { id: "stats", icon: BarChart3, label: "Stats" },
+    { id: "profile", icon: User, label: "Profile" },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 border-t border-gray-200 px-3 py-2 z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-white/95 border-t border-gray-200 px-2 py-1 z-50">
       <div className="flex justify-around items-center max-w-md mx-auto">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center space-y-0.5 p-2 rounded-xl transition-all duration-300 ${
-              activeTab === tab.id ? "bg-gray-200 font-bold" : "hover:bg-gray-100"
-            }`}
-          >
-            <span className="text-lg">{tab.icon}</span>
-            <span className="text-xs">{tab.label}</span>
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center space-y-0.5 p-1.5 rounded-lg transition-all duration-300 ${
+                activeTab === tab.id ? "bg-gray-200 font-bold text-blue-600" : "hover:bg-gray-100 text-gray-600"
+              }`}
+            >
+              <IconComponent size={18} />
+              <span className="text-xs">{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
