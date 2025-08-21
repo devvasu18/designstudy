@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, MoreHorizontal, Volume2, VolumeX, Play, Pause } from 'lucide-react';
 
 const StoryModal = ({ isOpen, onClose, story }) => {
@@ -8,6 +8,8 @@ const StoryModal = ({ isOpen, onClose, story }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const isMountedRef = useRef(true);
+  const currentIndexRef = useRef(0);
 
   // Demo content for each user
   const getStoryContent = (username) => {
@@ -42,7 +44,7 @@ const StoryModal = ({ isOpen, onClose, story }) => {
         },
         {
           type: 'image',
-          url: 'https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=400&h=700&fit=crop',
+          url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=700&fit=crop&crop=face',
           duration: 3500
         }
       ],
@@ -76,7 +78,7 @@ const StoryModal = ({ isOpen, onClose, story }) => {
         },
         {
           type: 'image',
-          url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f25?w=400&h=700&fit=crop&crop=face',
+          url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=700&fit=crop&crop=face',
           duration: 3500
         }
       ],
@@ -110,49 +112,93 @@ const StoryModal = ({ isOpen, onClose, story }) => {
 
   const processedContent = story ? getStoryContent(story.username) : [];
 
+  // Cleanup on unmount
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+
   useEffect(() => {
     if (!isOpen || !isPlaying || processedContent.length === 0) return;
 
     const timer = setInterval(() => {
+      if (!isMountedRef.current) {
+        clearInterval(timer);
+        return;
+      }
+      
       setProgress((prev) => {
-        if (!processedContent[currentIndex]) return prev;
+        const currentIdx = currentIndexRef.current;
+        if (!processedContent[currentIdx]) return prev;
         
-        const newProgress = prev + (100 / (processedContent[currentIndex].duration / 100));
+        const newProgress = prev + (100 / (processedContent[currentIdx].duration / 100));
         if (newProgress >= 100) {
-          if (currentIndex < processedContent.length - 1) {
-            setIsTransitioning(true);
-            setTimeout(() => {
-              setCurrentIndex(prev => prev + 1);
-              setIsTransitioning(false);
-            }, 100);
-            return 0;
+          if (currentIdx < processedContent.length - 1) {
+            if (isMountedRef.current) {
+              setIsTransitioning(true);
+              // Update index and return 0 to reset progress immediately
+              setCurrentIndex(currentIdx + 1);
+              setTimeout(() => {
+                if (isMountedRef.current) {
+                  setIsTransitioning(false);
+                }
+              }, 100);
+            }
+            return 0; // Reset progress immediately for auto-advance
           } else {
-            onClose();
-            return 0;
+            // Clear timer before closing to prevent state updates after unmount
+            clearInterval(timer);
+            setTimeout(() => {
+              if (isMountedRef.current) {
+                onClose();
+              }
+            }, 100);
+            return 100;
           }
         }
         return newProgress;
       });
     }, 100);
 
-    return () => clearInterval(timer);
-  }, [isOpen, isPlaying, currentIndex, onClose, processedContent]);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [isOpen, isPlaying, onClose, processedContent]);
 
   useEffect(() => {
     if (isOpen) {
       setCurrentIndex(0);
+      currentIndexRef.current = 0;
       setProgress(0);
       setIsPlaying(true);
+      setIsTransitioning(false);
+    } else {
+      // Reset all states when modal closes
+      setCurrentIndex(0);
+      currentIndexRef.current = 0;
+      setProgress(0);
+      setIsPlaying(true);
+      setIsTransitioning(false);
     }
   }, [isOpen]);
 
   const handleNext = () => {
+    if (!isMountedRef.current) return;
+    
     if (currentIndex < processedContent.length - 1) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentIndex(prev => prev + 1);
-        setProgress(0);
-        setIsTransitioning(false);
+        if (isMountedRef.current) {
+          setCurrentIndex(prev => prev + 1);
+          setProgress(0);
+          setIsTransitioning(false);
+        }
       }, 150);
     } else {
       onClose();
@@ -160,12 +206,16 @@ const StoryModal = ({ isOpen, onClose, story }) => {
   };
 
   const handlePrevious = () => {
+    if (!isMountedRef.current) return;
+    
     if (currentIndex > 0) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentIndex(prev => prev - 1);
-        setProgress(0);
-        setIsTransitioning(false);
+        if (isMountedRef.current) {
+          setCurrentIndex(prev => prev - 1);
+          setProgress(0);
+          setIsTransitioning(false);
+        }
       }, 150);
     }
   };
@@ -251,7 +301,7 @@ const StoryModal = ({ isOpen, onClose, story }) => {
               alt="Story content"
               className="w-full h-full object-cover"
               onError={(e) => {
-                console.error('Image loading error:', e.target.src);
+                console.error(`Image loading error for story ${currentIndex + 1}:`, e.target.src);
                 e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=700&fit=crop';
               }}
             />
