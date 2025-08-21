@@ -1,69 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-// import tab content components
-import ProfileInfoCard from "@/components/ProfileInfoCard";
-import StoriesSwiper from "@/components/StoriesSwiper";
-import useScrollPosition from "@/hooks/useScrollPosition";
-import SecretStalkersContent from "@/components/SecretStalkersContent";
-import OnClickFeatures from "@/components/OnClickFeatures";
-import StatsPage from "@/components/StatsPage";
-import ProfilePage from "@/components/ProfilePage";
+export default function RootPage() {
+  const router = useRouter();
 
-// shared UI
-import BottamNavigation from "@/components/BottamNavigation";
-import NotificationToast from "@/components/NotifiactionToast";
-import ProfileHeader from "@/components/ProfileHeader";
-import StoryViewModal from "@/components/StoryViewModal";
-
-//pages
-import DiscoverPage from "@/components/DiscoverPage";
-
-
-export default function HomePage() {
-  const isStoriesSticky = useScrollPosition(150);
-  const [selectedStory, setSelectedStory] = useState(null);
-  const [activeTab, setActiveTab] = useState("home"); // 👈 tab state
-
-  // content switcher
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "home":
-        return (
-          <div>
-            <ProfileInfoCard />
-            <StoriesSwiper
-              isSticky={isStoriesSticky}
-              onStoryClick={(story) => setSelectedStory(story)}
-              onAddStory={() => alert("Add a new story")}
-            />
-            <SecretStalkersContent
-              onUnlock={(friendId) =>
-                alert(`Unlocked friend with ID: ${friendId}`)
-              }
-            />
-            <OnClickFeatures />
-          </div>
-        );
-      case "stats":
-        return <StatsPage />;
-      case "profile":
-        return <ProfilePage />;
-      case "discover":
-        return <DiscoverPage />;
-      default:
-        return null;
-    }
-  };
+  useEffect(() => {
+    // Redirect to home tab as default
+    router.replace("/home");
+  }, [router]);
 
   return (
-    <div>
-      <ProfileHeader />
-      {renderTabContent()}
-
-      <BottamNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-      <NotificationToast />
-      <StoryViewModal story={selectedStory} />
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      <span className="ml-2 text-gray-600">Loading...</span>
     </div>
   );
 }

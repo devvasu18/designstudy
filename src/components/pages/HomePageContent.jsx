@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
-import ProfileInfoCard from "@/components/ProfileInfoCard";
-import StoriesSwiper from "@/components/StoriesSwiper";
-import SecretStalkersContent from "@/components/SecretStalkersContent";
-import OnClickFeatures from "@/components/OnClickFeatures";
+import ProfileInfoCard from "@/components/features/profile/ProfileInfoCard";
+import StoriesSwiper from "@/components/features/stories/StoriesSwiper";
+import SecretStalkersContent from "@/components/sections/SecretStalkersContent";
 import useScrollPosition from "@/hooks/useScrollPosition";
 
 export default function HomePageContent() {
@@ -37,8 +36,6 @@ export default function HomePageContent() {
       <SecretStalkersContent
         onUnlock={handleUnlock}
       />
-      
-      <OnClickFeatures />
     </div>
   );
 }

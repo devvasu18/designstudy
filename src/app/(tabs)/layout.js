@@ -5,11 +5,11 @@ import useScrollPosition from "@/hooks/useScrollPosition";
 import { AppContextProvider, useAppContext } from "@/context/AppContext";
 
 // shared UI components
-import BottamNavigation from "@/components/BottamNavigation";
-import NotificationToast from "@/components/NotifiactionToast";
-import ProfileHeader from "@/components/ProfileHeader";
-import StoryViewModalSimple from "@/components/StoryViewModalSimple";
-import DisablePinchZoom from "@/components/DisablePinchZoom";
+import BottomNavigation from "@/components/ui/BottomNavigation";
+import NotificationToast from "@/components/ui/NotificationToast";
+import ProfileHeader from "@/components/features/profile/ProfileHeader";
+import StoryViewModalSimple from "@/components/features/stories/StoryViewModalSimple";
+import DisablePinchZoom from "@/components/ui/DisablePinchZoom";
 
 function TabsLayoutContent({ children }) {
   const pathname = usePathname();
@@ -38,7 +38,6 @@ function TabsLayoutContent({ children }) {
   return (
     <>
       <DisablePinchZoom />
-      
       <div 
         className="min-h-screen"
         style={{
@@ -67,7 +66,7 @@ function TabsLayoutContent({ children }) {
 
       {/* Bottom Navigation - Hide when story modal is open */}
       {!selectedStory && (
-        <BottamNavigation 
+        <BottomNavigation 
           activeTab={getActiveTab()} 
           setActiveTab={handleTabChange} 
         />

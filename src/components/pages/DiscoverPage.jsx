@@ -1,25 +1,44 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Heart, MessageCircle, UserPlus, Star } from 'lucide-react';
+import { discoverApi } from '@/services/api';
+
 const DiscoverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [followedUsers, setFollowedUsers] = useState(new Set());
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample users data matching your screenshot
-  const users = [
-    { id: 1, username: 'santoshsha', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasStory: true, isVerified: false },
-    { id: 2, username: 'bhaktipath', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasStory: true, isVerified: true },
-    { id: 3, username: 'butatidham', avatar: 'https://randomuser.me/api/portraits/men/67.jpg', hasStory: true, isVerified: false },
-    { id: 4, username: 'karni_mata', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', hasStory: true, isVerified: false },
-    { id: 5, username: 'jagannath', avatar: 'https://randomuser.me/api/portraits/men/45.jpg', hasStory: true, isVerified: true },
-    { id: 6, username: 'abhijeet_s', avatar: 'https://randomuser.me/api/portraits/men/33.jpg', hasStory: true, isVerified: false },
-    { id: 7, username: 'pranavsank', avatar: 'https://randomuser.me/api/portraits/men/89.jpg', hasStory: true, isVerified: false },
-    { id: 8, username: 'vikramchar', avatar: 'https://randomuser.me/api/portraits/men/75.jpg', hasStory: true, isVerified: true },
-    { id: 9, username: 'its_me_jan', avatar: 'https://randomuser.me/api/portraits/women/65.jpg', hasStory: true, isVerified: false },
-    { id: 10, username: 'rajesh_k', avatar: 'https://randomuser.me/api/portraits/men/55.jpg', hasStory: true, isVerified: false },
-    { id: 11, username: 'maya_patel', avatar: 'https://randomuser.me/api/portraits/women/89.jpg', hasStory: true, isVerified: true },
-    { id: 12, username: 'harsh_21', avatar: 'https://randomuser.me/api/portraits/men/77.jpg', hasStory: true, isVerified: false },
-  ];
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await discoverApi.getUsers();
+      // Transform API data to match component expectations
+      const transformedUsers = response.data.map(user => ({
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar,
+        hasStory: true,
+        isVerified: user.isVerified
+      }));
+      setUsers(transformedUsers);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+      // Fallback to mock data if API fails
+      setUsers([
+        { id: 1, username: 'santoshsha', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasStory: true, isVerified: false },
+        { id: 2, username: 'bhaktipath', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasStory: true, isVerified: true },
+        { id: 3, username: 'butatidham', avatar: 'https://randomuser.me/api/portraits/men/67.jpg', hasStory: true, isVerified: false },
+        { id: 4, username: 'karni_mata', avatar: 'https://randomuser.me/api/portraits/women/68.jpg', hasStory: true, isVerified: false },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredUsers = users.filter(user => 
     user.username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -260,4 +279,4 @@ const SocialProfileApp = () => {
   );
 };
 
-export default SocialProfileApp;
+export default DiscoverPage;

@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Design Study - Next.js Social Media App
 
-## Getting Started
+A modern, clean Next.js application with a proper tab-based navigation structure, featuring stories, profile management, stats, and user discovery.
 
-First, run the development server:
+## 🚀 **Features**
+
+- **Clean Tab Navigation**: Home, Stats, Profile, and Discover pages
+- **Stories Feature**: Interactive story viewing and uploading
+- **User Profile**: Complete profile management with stats
+- **Discover Users**: Find and connect with new users
+- **Statistics Dashboard**: Comprehensive analytics and insights
+- **Responsive Design**: Mobile-first responsive UI
+- **Dummy API**: Complete mock API for all features
+
+## 🏗️ **Tech Stack**
+
+- **Framework**: Next.js 15.5.0 with App Router
+- **Styling**: Tailwind CSS 4
+- **Icons**: Lucide React
+- **Animations**: Framer Motion
+- **HTTP Client**: Built-in fetch with custom API layer
+- **State Management**: React Context + Custom hooks
+
+## 🚀 **Getting Started**
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+3. **Open in browser**
+   ```
+   http://localhost:3000
+   ```
+
+### Build for Production
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔗 **API Endpoints**
 
-You can start editing the page by modifying `app/dashboard/page.js`. The page auto-updates as you edit the file.
+All API endpoints return mock data for development:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **GET** `/api/health` - API health check
+- **GET** `/api/user` - Get user profile
+- **PUT** `/api/user` - Update user profile
+- **GET** `/api/stats?period=week` - Get user statistics
+- **GET** `/api/stories` - Get all stories
+- **POST** `/api/stories` - Upload new story
+- **GET** `/api/discover?type=users&category=all` - Discover users/posts
 
-## Learn More
+## 📱 **App Structure**
 
-To learn more about Next.js, take a look at the following resources:
+### **Home Tab** (`/home`)
+- User profile info card
+- Interactive stories swiper
+- Secret stalkers section
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### **Stats Tab** (`/stats`)
+- Follower/following analytics
+- Engagement metrics
+- Growth statistics
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **Profile Tab** (`/profile`)
+- Profile management
+- User information display
 
-## Deploy on Vercel
+### **Discover Tab** (`/discover`)
+- Find new users
+- Filter by categories
+- Search functionality
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ✨ **Clean Architecture**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Maintainable**: Clear separation of concerns
+- **Scalable**: Easy to add new features
+- **Reusable**: Component-based architecture
+- **Performance**: Optimized with Next.js App Router
+
+---
+
+**Ready for development!** 🎉
