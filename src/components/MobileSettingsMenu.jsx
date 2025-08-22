@@ -22,30 +22,265 @@ export default function MobileSettingsMenu({ onClose }) {
     onClose();
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Instagram Stories & Features App',
+      text: 'Discover amazing Instagram stories, see who viewed your profile, and unlock premium features! 📱✨',
+      url: window.location.origin || 'https://your-app-domain.com'
+    };
+
+    try {
+      // Check if Web Share API is supported (mainly on mobile)
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        console.log('Content shared successfully');
+      } else {
+        // Fallback: Copy to clipboard and show options
+        await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+        
+        // Show a nice notification instead of alert
+        showShareNotification();
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        // Fallback for older browsers
+        fallbackShare(shareData);
+      }
+    }
+  };
+
+  const showShareNotification = () => {
+    // Create a temporary notification element
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #4CAF50;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-family: system-ui;
+        font-size: 14px;
+        animation: slideDown 0.3s ease-out;
+      ">
+        📋 Link copied to clipboard! Share with your friends
+      </div>
+      <style>
+        @keyframes slideDown {
+          from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+      </style>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 3000);
+  };
+
+  const fallbackShare = (shareData) => {
+    // For very old browsers, try to open social media sharing URLs
+    const text = encodeURIComponent(`${shareData.text} ${shareData.url}`);
+    const url = encodeURIComponent(shareData.url);
+    
+    // Create a simple sharing modal
+    const shareModal = document.createElement('div');
+    shareModal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+      ">
+        <div style="
+          background: white;
+          padding: 24px;
+          border-radius: 12px;
+          max-width: 300px;
+          width: 90%;
+          text-align: center;
+          font-family: system-ui;
+        ">
+          <h3 style="margin: 0 0 16px 0; color: #333;">Share App</h3>
+          <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 16px;">
+            <a href="https://wa.me/?text=${text}" target="_blank" style="
+              display: inline-block;
+              padding: 8px 16px;
+              background: #25D366;
+              color: white;
+              text-decoration: none;
+              border-radius: 6px;
+              font-size: 12px;
+            ">WhatsApp</a>
+            <a href="https://t.me/share/url?url=${url}&text=${encodeURIComponent(shareData.text)}" target="_blank" style="
+              display: inline-block;
+              padding: 8px 16px;
+              background: #0088cc;
+              color: white;
+              text-decoration: none;
+              border-radius: 6px;
+              font-size: 12px;
+            ">Telegram</a>
+          </div>
+          <button onclick="this.parentElement.parentElement.remove()" style="
+            background: #f5f5f5;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+          ">Close</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(shareModal);
+  };
+
+  const handleHelpSupport = () => {
+    const subject = encodeURIComponent('Feedback');
+    const body = encodeURIComponent(`Hello InstaLker Team,\n\nI would like to provide feedback about the app.\n\nFrom: userid@12\nTo: instalker@12\n\nFeedback:\n\n\nRegards,\nUser`);
+    const mailtoLink = `mailto:instalker@12?subject=${subject}&body=${body}`;
+    
+    // Try to open email client
+    window.location.href = mailtoLink;
+  };
+
+  const handlePrivacyPolicy = () => {
+    // Create privacy policy popup
+    const privacyModal = document.createElement('div');
+    privacyModal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+      ">
+        <div style="
+          background: white;
+          padding: 24px;
+          border-radius: 16px;
+          max-width: 400px;
+          width: 100%;
+          max-height: 80vh;
+          overflow-y: auto;
+          font-family: system-ui;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        ">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333; font-size: 20px;">🔒 Privacy & Security</h2>
+            <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" style="
+              background: #f5f5f5;
+              border: none;
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              cursor: pointer;
+              font-size: 18px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">×</button>
+          </div>
+          
+          <div style="space-y: 16px;">
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 20px; margin-right: 8px;">🛡️</span>
+                <h3 style="margin: 0; color: #333; font-size: 16px;">Data Protection</h3>
+              </div>
+              <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">Your Instagram data is processed securely and never stored permanently on our servers.</p>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 20px; margin-right: 8px;">🔐</span>
+                <h3 style="margin: 0; color: #333; font-size: 16px;">Secure Login</h3>
+              </div>
+              <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">We use Instagram's official API and OAuth for secure authentication. Your password is never shared with us.</p>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 20px; margin-right: 8px;">👁️</span>
+                <h3 style="margin: 0; color: #333; font-size: 16px;">Profile Analytics</h3>
+              </div>
+              <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">Story views and profile analytics are processed in real-time and not stored beyond the session.</p>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 20px; margin-right: 8px;">🚫</span>
+                <h3 style="margin: 0; color: #333; font-size: 16px;">No Data Sharing</h3>
+              </div>
+              <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">We never sell, share, or distribute your personal information to third parties.</p>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 20px; margin-right: 8px;">🔄</span>
+                <h3 style="margin: 0; color: #333; font-size: 16px;">Data Control</h3>
+              </div>
+              <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">You can request data deletion or account removal at any time through our support system.</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 20px; margin-right: 8px;">⚡</span>
+                <h3 style="margin: 0; color: #333; font-size: 16px;">GDPR Compliant</h3>
+              </div>
+              <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">Our app is fully compliant with GDPR and other international privacy regulations.</p>
+            </div>
+          </div>
+          
+          <div style="text-align: center; padding-top: 16px; border-top: 1px solid #eee;">
+            <p style="margin: 0; color: #888; font-size: 12px;">For detailed privacy policy, contact: instalker@12</p>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(privacyModal);
+  };
+
   const handleMenuItemClick = (item) => {
     switch(item) {
       case 'premium':
         openPremiumModal();
         break;
       case 'share':
-        if (navigator.share) {
-          navigator.share({
-            title: 'Check out this app!',
-            text: 'Amazing app I found',
-            url: window.location.href
-          });
-        } else {
-          alert('Share with friends - Link copied to clipboard!');
-        }
+        handleShare();
         break;
       case 'rate':
-        alert('Rate Us - Thank you for your feedback!');
+        window.open('https://play.google.com/store/apps/details?id=com.app.followersfollowing', '_blank');
         break;
       case 'help':
-        alert('Help & Support - How can we assist you today?');
+        handleHelpSupport();
         break;
       case 'privacy':
-        alert('Privacy Policy - Your privacy is important to us.');
+        handlePrivacyPolicy();
         break;
       default:
         break;
