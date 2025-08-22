@@ -4,29 +4,16 @@
 // - Discover page (all 20 users)
 // - Story modal (unified experience for both pages)
 
-// Static image paths for faster loading
-const getStaticAvatarPath = (id) => `/images/avatars/user${id}.jpg`;
-const getStaticStoryPath = (userId, storyIndex) => `/images/stories/user${userId}_story${storyIndex}.jpg`;
+// Optimized image URLs for faster loading
+const getAvatarUrl = (id) => `https://randomuser.me/api/portraits/${id % 2 === 0 ? 'men' : 'women'}/${20 + id}.jpg`;
+const getStoryUrl = (userId, storyIndex) => `https://picsum.photos/300/500?random=${userId * 10 + storyIndex}`;
 
-// Fallback to external images if static images don't exist
-const getFallbackAvatar = (id) => `https://randomuser.me/api/portraits/${id % 2 === 0 ? 'men' : 'women'}/${20 + id}.jpg`;
-const getFallbackStory = (userId, storyIndex) => `https://picsum.photos/300/500?random=${userId * 10 + storyIndex}&blur=0`;
-
-// Helper function to create image array with static-first approach
+// Helper function to create image array
 const createImageArray = (userId) => {
   return [
-    getStaticAvatarPath(userId), // Try static avatar first
-    getStaticStoryPath(userId, 1), // Try static story 1
-    getStaticStoryPath(userId, 2), // Try static story 2
-  ];
-};
-
-// Fallback image array for when static images don't exist
-const createFallbackImageArray = (userId) => {
-  return [
-    getFallbackAvatar(userId),
-    getFallbackStory(userId, 1),
-    getFallbackStory(userId, 2),
+    getAvatarUrl(userId),
+    getStoryUrl(userId, 1),
+    getStoryUrl(userId, 2),
   ];
 };
 
@@ -35,58 +22,47 @@ export const storyUsers = [
   {
     id: 1,
     username: 'divya_holi',
-    avatar: getStaticAvatarPath(1),
+    avatar: getAvatarUrl(1),
     timeAgo: '30m',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(1),
-    fallbackImages: createFallbackImageArray(1)
+    images: createImageArray(1)
   },
   {
     id: 2,
     username: 'tejasvini',
-    avatar: getStaticAvatarPath(2),
+    avatar: getAvatarUrl(2),
     timeAgo: '1h',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(2),
-    fallbackImages: createFallbackImageArray(2)
+    images: createImageArray(2)
   },
   {
     id: 3,
     username: 'maahi_upa',
-    avatar: getStaticAvatarPath(3),
+    avatar: getAvatarUrl(3),
     timeAgo: '1h',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(3),
-    fallbackImages: createFallbackImageArray(3)
+    images: createImageArray(3)
   },
   {
     id: 4,
     username: 'aman_math',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+    avatar: getAvatarUrl(4),
     timeAgo: '2h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/32.jpg',
-      'https://picsum.photos/400/600?random=41',
-      'https://picsum.photos/400/600?random=42'
-    ]
+    images: createImageArray(4)
   },
   {
     id: 5,
     username: 'hiteshgehi',
-    avatar: 'https://randomuser.me/api/portraits/men/45.jpg',
+    avatar: getAvatarUrl(5),
     timeAgo: '2h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/45.jpg',
-      'https://picsum.photos/400/600?random=51',
-      'https://picsum.photos/400/600?random=52'
-    ]
+    images: createImageArray(5)
   },
   {
     id: 6,

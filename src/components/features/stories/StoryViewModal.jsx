@@ -8,8 +8,6 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   const [progress, setProgress] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
   const [preloadedImages, setPreloadedImages] = useState(new Set());
-  const [imageSrc, setImageSrc] = useState('');
-  const [usingFallback, setUsingFallback] = useState(false);
   const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
   const touchEndRef = useRef({ x: 0, y: 0, time: 0 });
   const progressIntervalRef = useRef(null);
@@ -179,7 +177,7 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   const storyImages = currentUser?.images || [];
   const currentImageUrl = storyImages[currentIndex];
 
-  // Debug: Log when image URL changes
+  // Debug: Log when image URL changes and handle loading state
   useEffect(() => {
     console.log('=== IMAGE CHANGE DEBUG ===');
     console.log('Current User Index:', currentUserIndex);
@@ -189,10 +187,10 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
     console.log('Image Preloaded:', preloadedImages.has(currentImageUrl));
     console.log('=========================');
     
-    // Only set loading if image is not preloaded
+    // Set loading state based on preload status
     if (currentImageUrl && !preloadedImages.has(currentImageUrl)) {
       setImageLoading(true);
-    } else {
+    } else if (currentImageUrl && preloadedImages.has(currentImageUrl)) {
       setImageLoading(false);
     }
   }, [currentUserIndex, currentIndex, currentImageUrl, preloadedImages]);
@@ -451,10 +449,11 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
 
         {/* Story image with loading state */}
         <div className="relative w-full h-full">
-          {/* Loading spinner */}
+          {/* Loading spinner - transparent background */}
           {imageLoading && (
-            <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-10">
+            <div className="absolute inset-0 flex items-center justify-center z-10">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              <div className="ml-3 text-white text-sm">Loading...</div>
             </div>
           )}
           
@@ -469,14 +468,13 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
             loading="eager"
             onError={(e) => {
               console.error('Image failed to load:', currentImageUrl);
-              console.error('User:', currentUser?.username, 'Index:', currentIndex);
               setImageLoading(false);
               e.target.src = 'https://via.placeholder.com/400x600?text=Image+Not+Found';
             }}
             onLoad={() => {
-              console.log('Image loaded successfully:', currentImageUrl);
-              console.log('For user:', currentUser?.username, 'Index:', currentIndex);
+              console.log('✅ Image loaded successfully:', currentImageUrl);
               setImageLoading(false);
+              setPreloadedImages(prev => new Set([...prev, currentImageUrl]));
             }}
           />
           
@@ -487,6 +485,11 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
               alt="preload"
               className="hidden"
               loading="eager"
+              onLoad={() => {
+                const nextUrl = storyImages[currentIndex + 1];
+                setPreloadedImages(prev => new Set([...prev, nextUrl]));
+                console.log('✅ Preloaded next image:', nextUrl);
+              }}
             />
           )}
         </div>
