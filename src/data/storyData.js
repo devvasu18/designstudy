@@ -4,26 +4,30 @@
 // - Discover page (all 20 users)
 // - Story modal (unified experience for both pages)
 
-export const generateRandomImages = (userId, count = 3) => {
-  const images = Array.from({ length: count }, (_, index) => 
-    `https://picsum.photos/400/600?random=${userId * 10 + index + 1}`
-  );
-  console.log(`Generated ${count} images for user ${userId}:`, images);
-  return images;
+// Static image paths for faster loading
+const getStaticAvatarPath = (id) => `/images/avatars/user${id}.jpg`;
+const getStaticStoryPath = (userId, storyIndex) => `/images/stories/user${userId}_story${storyIndex}.jpg`;
+
+// Fallback to external images if static images don't exist
+const getFallbackAvatar = (id) => `https://randomuser.me/api/portraits/${id % 2 === 0 ? 'men' : 'women'}/${20 + id}.jpg`;
+const getFallbackStory = (userId, storyIndex) => `https://picsum.photos/300/500?random=${userId * 10 + storyIndex}&blur=0`;
+
+// Helper function to create image array with static-first approach
+const createImageArray = (userId) => {
+  return [
+    getStaticAvatarPath(userId), // Try static avatar first
+    getStaticStoryPath(userId, 1), // Try static story 1
+    getStaticStoryPath(userId, 2), // Try static story 2
+  ];
 };
 
-// Test function to verify data structure
-export const testUserImages = () => {
-  const testUser = storyUsers[0]; // First user
-  console.log('=== TESTING USER IMAGES ===');
-  console.log('User:', testUser.username);
-  console.log('Avatar:', testUser.avatar);
-  console.log('Final images array:', testUser.images);
-  console.log('Total images count:', testUser.images.length);
-  testUser.images.forEach((img, idx) => {
-    console.log(`  Image ${idx}: ${img}`);
-  });
-  console.log('=========================');
+// Fallback image array for when static images don't exist
+const createFallbackImageArray = (userId) => {
+  return [
+    getFallbackAvatar(userId),
+    getFallbackStory(userId, 1),
+    getFallbackStory(userId, 2),
+  ];
 };
 
 // Main story users data (20 dummy users)
@@ -31,41 +35,32 @@ export const storyUsers = [
   {
     id: 1,
     username: 'divya_holi',
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    avatar: getStaticAvatarPath(1),
     timeAgo: '30m',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/women/44.jpg',
-      'https://picsum.photos/400/600?random=11',
-      'https://picsum.photos/400/600?random=12'
-    ]
+    images: createImageArray(1),
+    fallbackImages: createFallbackImageArray(1)
   },
   {
     id: 2,
     username: 'tejasvini',
-    avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
+    avatar: getStaticAvatarPath(2),
     timeAgo: '1h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/22.jpg',
-      'https://picsum.photos/400/600?random=21',
-      'https://picsum.photos/400/600?random=22'
-    ]
+    images: createImageArray(2),
+    fallbackImages: createFallbackImageArray(2)
   },
   {
     id: 3,
     username: 'maahi_upa',
-    avatar: 'https://randomuser.me/api/portraits/women/67.jpg',
+    avatar: getStaticAvatarPath(3),
     timeAgo: '1h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/women/67.jpg',
-      'https://picsum.photos/400/600?random=31',
-      'https://picsum.photos/400/600?random=32'
-    ]
+    images: createImageArray(3),
+    fallbackImages: createFallbackImageArray(3)
   },
   {
     id: 4,

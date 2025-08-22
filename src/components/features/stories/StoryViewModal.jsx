@@ -6,6 +6,10 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [preloadedImages, setPreloadedImages] = useState(new Set());
+  const [imageSrc, setImageSrc] = useState('');
+  const [usingFallback, setUsingFallback] = useState(false);
   const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
   const touchEndRef = useRef({ x: 0, y: 0, time: 0 });
   const progressIntervalRef = useRef(null);
@@ -22,6 +26,49 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
       setProgress(0);
     }
   }, [story]);
+
+  // Aggressive preloading - preload all images for current user and next user
+  useEffect(() => {
+    if (!isOpen || !storyUsers[currentUserIndex]) return;
+
+    const preloadImage = (url) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          setPreloadedImages(prev => new Set([...prev, url]));
+          resolve(url);
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+    };
+
+    const preloadUserImages = async () => {
+      // Preload current user's images
+      const currentUser = storyUsers[currentUserIndex];
+      if (currentUser?.images) {
+        console.log('Preloading images for user:', currentUser.username);
+        currentUser.images.forEach(url => {
+          preloadImage(url).catch(err => 
+            console.warn('Failed to preload:', url, err)
+          );
+        });
+      }
+
+      // Preload next user's images too for smoother transitions
+      const nextUser = storyUsers[currentUserIndex + 1];
+      if (nextUser?.images) {
+        console.log('Preloading next user images:', nextUser.username);
+        nextUser.images.forEach(url => {
+          preloadImage(url).catch(err => 
+            console.warn('Failed to preload next user:', url, err)
+          );
+        });
+      }
+    };
+
+    preloadUserImages();
+  }, [isOpen, currentUserIndex]);
 
   // Simple auto-progression timer with better state management
   useEffect(() => {
@@ -139,9 +186,16 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
     console.log('Current User:', currentUser?.username);
     console.log('Current Image Index:', currentIndex);
     console.log('Current Image URL:', currentImageUrl);
-    console.log('All Images for User:', storyImages);
+    console.log('Image Preloaded:', preloadedImages.has(currentImageUrl));
     console.log('=========================');
-  }, [currentUserIndex, currentIndex, currentImageUrl]);
+    
+    // Only set loading if image is not preloaded
+    if (currentImageUrl && !preloadedImages.has(currentImageUrl)) {
+      setImageLoading(true);
+    } else {
+      setImageLoading(false);
+    }
+  }, [currentUserIndex, currentIndex, currentImageUrl, preloadedImages]);
 
   // Navigation functions with improved logic
   const navigateToNextStory = () => {
@@ -395,23 +449,47 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Story image */}
-        <img
-          key={`${currentUserIndex}-${currentIndex}`}
-          src={currentImageUrl || 'https://via.placeholder.com/400x600?text=Loading'}
-          alt={`Story ${currentIndex + 1} of ${currentUser?.username}`}
-          className="w-full h-full object-cover"
-          loading="eager"
-          onError={(e) => {
-            console.error('Image failed to load:', currentImageUrl);
-            console.error('User:', currentUser?.username, 'Index:', currentIndex);
-            e.target.src = 'https://via.placeholder.com/400x600?text=Image+Not+Found';
-          }}
-          onLoad={() => {
-            console.log('Image loaded successfully:', currentImageUrl);
-            console.log('For user:', currentUser?.username, 'Index:', currentIndex);
-          }}
-        />
+        {/* Story image with loading state */}
+        <div className="relative w-full h-full">
+          {/* Loading spinner */}
+          {imageLoading && (
+            <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-10">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+            </div>
+          )}
+          
+          {/* Main image */}
+          <img
+            key={`${currentUserIndex}-${currentIndex}`}
+            src={currentImageUrl || 'https://via.placeholder.com/400x600?text=Loading'}
+            alt={`Story ${currentIndex + 1} of ${currentUser?.username}`}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            loading="eager"
+            onError={(e) => {
+              console.error('Image failed to load:', currentImageUrl);
+              console.error('User:', currentUser?.username, 'Index:', currentIndex);
+              setImageLoading(false);
+              e.target.src = 'https://via.placeholder.com/400x600?text=Image+Not+Found';
+            }}
+            onLoad={() => {
+              console.log('Image loaded successfully:', currentImageUrl);
+              console.log('For user:', currentUser?.username, 'Index:', currentIndex);
+              setImageLoading(false);
+            }}
+          />
+          
+          {/* Preload next image for smoother transitions */}
+          {!imageLoading && currentIndex < storyImages.length - 1 && (
+            <img
+              src={storyImages[currentIndex + 1]}
+              alt="preload"
+              className="hidden"
+              loading="eager"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
