@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { MoreHorizontal } from 'lucide-react';
 import MobileSettingsMenu from '../../MobileSettingsMenu';
 import { useAppContext } from '@/context/AppContext';
@@ -8,19 +9,86 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
   const [showFullBio, setShowFullBio] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
-  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [animatedStats, setAnimatedStats] = useState({
     followers: 0,
     following: 0,
     posts: 0
   });
   
-  const { isDarkMode } = useAppContext();
+  const { isDarkMode, isSettingsMenuOpen, openSettingsMenu, closeSettingsMenu } = useAppContext();
+  const router = useRouter();
 
   const finalStats = {
     followers: 398,
     following: 238,
     posts: 15
+  };
+
+  // Handler for Analyse Profile button
+  const handleAnalyseProfile = () => {
+    router.push('/profile');
+  };
+
+  // Handler for Share Profile button
+  const handleShareProfile = async () => {
+    const userId = 'userid@12'; // You can replace this with actual user ID
+    const shareUrl = `https://play.google.com/store/apps/details?id=com.app.followersfollowing&referrer=${encodeURIComponent(userId)}`;
+    const shareText = `Check out this amazing Instagram analytics app! 📊✨\n\nGet detailed insights about your followers, track unfollowers, and analyze your profile performance.\n\nDownload now: ${shareUrl}`;
+
+    try {
+      // Try to use native share API if available
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Instagram Analytics App',
+          text: shareText,
+          url: shareUrl,
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(shareText);
+        
+        // Show notification
+        const notification = document.createElement('div');
+        notification.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            font-family: system-ui;
+            font-size: 14px;
+            animation: slideDown 0.3s ease-out;
+          ">
+            📋 App link copied to clipboard! Share it with your friends
+          </div>
+          <style>
+            @keyframes slideDown {
+              from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+              to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+          </style>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 3000);
+      }
+    } catch (error) {
+      console.log('Error sharing:', error);
+      // Fallback: Open Play Store link
+      window.open(shareUrl, '_blank');
+    }
   };
 
   // Animate numbers on component mount
@@ -103,7 +171,7 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
                 }`}>Vasu Dev</h1>
               </div>
               <button 
-                onClick={() => setShowSettingsMenu(true)}
+                onClick={() => openSettingsMenu()}
                 className={`p-2 rounded-full transition-colors group ${
                   isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'
                 }`}
@@ -170,23 +238,31 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
 
         {/* Quick Actions */}
         <div className="flex gap-2">
-          <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg tracking-wide">
+          <button 
+            onClick={handleAnalyseProfile}
+            className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg tracking-wide"
+          >
             Analyse Profile
           </button>
-          <button className={`flex-1 text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg border tracking-wide ${
-            isDarkMode 
-              ? 'bg-gray-700/70 hover:bg-gray-600 text-gray-200 border-gray-600' 
-              : 'bg-white/70 hover:bg-white text-gray-700 border-gray-200'
-          }`}>
+          <button 
+            onClick={handleShareProfile}
+            className={`flex-1 text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg border tracking-wide ${
+              isDarkMode 
+                ? 'bg-gray-700/70 hover:bg-gray-600 text-gray-200 border-gray-600' 
+                : 'bg-white/70 hover:bg-white text-gray-700 border-gray-200'
+            }`}
+          >
             Share Profile
           </button>
         </div>
       </div>
 
       {/* Settings Menu Modal */}
-      {showSettingsMenu && (
-        <div className="fixed inset-0 z-[9999] bg-white overflow-hidden">
-          <MobileSettingsMenu onClose={() => setShowSettingsMenu(false)} />
+      {isSettingsMenuOpen && (
+        <div className={`fixed top-0 left-0 right-0 z-[9999] overflow-hidden transition-colors duration-300 ${
+          isDarkMode ? 'bg-gray-900' : 'bg-white'
+        }`} style={{ bottom: '-20px' }}>
+          <MobileSettingsMenu onClose={() => closeSettingsMenu()} />
         </div>
       )}
     </div>

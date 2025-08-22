@@ -3,12 +3,20 @@ import { useAppContext } from "@/context/AppContext";
 import { Home, Search, BarChart3, User } from "lucide-react";
 
 const BottamNavigation = ({ activeTab, setActiveTab }) => {
-  const { isStoryModalOpen, isDarkMode } = useAppContext();
+  const { isStoryModalOpen, isDarkMode, isSettingsMenuOpen, closeSettingsMenu } = useAppContext();
   
   // Hide navigation when story modal is open
   if (isStoryModalOpen) {
     return null;
   }
+
+  const handleTabClick = (tabId) => {
+    // If settings menu is open and user clicks home, close settings menu
+    if (isSettingsMenuOpen && tabId === 'home') {
+      closeSettingsMenu();
+    }
+    setActiveTab(tabId);
+  };
 
   const tabs = [
     { id: "home", icon: Home, label: "Home" },
@@ -27,7 +35,7 @@ const BottamNavigation = ({ activeTab, setActiveTab }) => {
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabClick(tab.id)}
               className={`flex flex-col items-center space-y-0.5 p-1.5 rounded-lg transition-all duration-300 ${
                 activeTab === tab.id 
                   ? "text-blue-500 scale-105" 

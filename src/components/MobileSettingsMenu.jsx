@@ -417,10 +417,10 @@ export default function MobileSettingsMenu({ onClose }) {
       </div>
 
       {/* Sign Out Button */}
-      <div className={`px-4 sm:px-6 md:px-8 py-6 md:py-8 lg:py-10 mb-12 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+      <div className={`px-4 sm:px-6 md:px-8 py-6 md:py-8 lg:py-10 mb-0 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <button 
           onClick={handleSignOut}
-          className={`w-full py-3 md:py-4 lg:py-5 px-4 md:px-6 lg:px-8 rounded-lg border text-sm md:text-base lg:text-lg ${isDarkMode ? 'border-gray-600 text-white hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} font-medium transition-colors`}
+          className={`w-full py-3 md:py-4 lg:py-5 px-4 md:px-6 lg:px-8 rounded-lg border text-sm md:text-base lg:text-lg ${isDarkMode ? 'border-gray-600 text-white hover:bg-gray-700' : 'border-gray-300 text-gray-700 '} font-medium transition-colors`}
         >
           Sign Out
         </button>

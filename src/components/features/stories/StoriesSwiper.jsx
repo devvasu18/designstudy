@@ -1,10 +1,12 @@
 'use client';
 import React, { useState, useEffect, memo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { getStoriesForHomePage } from '@/data/storyData';
 import { useAppContext } from '@/context/AppContext';
 
 const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
   const { isDarkMode } = useAppContext();
+  const router = useRouter();
   const [stories, setStories] = useState([]);
 
   useEffect(() => {
@@ -15,6 +17,10 @@ const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
   const handleStoryClick = useCallback((story) => {
     onStoryClick?.(story);
   }, [onStoryClick]);
+
+  const handleViewAll = useCallback(() => {
+    router.push('/discover');
+  }, [router]);
 
   return (
     <div className={`px-3 py-3 border-b transition-all duration-300 ${
@@ -28,11 +34,16 @@ const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
         <h2 className={`text-lg font-bold px-1 antialiased tracking-tight ${
           isDarkMode ? 'text-white' : 'text-gray-800'
         }`}>Stories</h2>
-        <div className={`text-xs font-medium cursor-pointer transition-colors antialiased ${
-          isDarkMode 
-            ? 'text-purple-400 hover:text-purple-300' 
-            : 'text-purple-600 hover:text-purple-800'
-        }`}>View all</div>
+        <div 
+          onClick={handleViewAll}
+          className={`text-xs font-medium cursor-pointer transition-colors antialiased ${
+            isDarkMode 
+              ? 'text-purple-400 hover:text-purple-300' 
+              : 'text-purple-600 hover:text-purple-800'
+          }`}
+        >
+          View all
+        </div>
       </div>
       <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
         {stories.map((story) => (

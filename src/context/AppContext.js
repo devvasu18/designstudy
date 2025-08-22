@@ -12,6 +12,7 @@ export function AppContextProvider({ children }) {
   const [currentStory, setCurrentStory] = useState(null);
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
 
   // Load dark mode preference from localStorage on initial load
   useEffect(() => {
@@ -81,6 +82,14 @@ export function AppContextProvider({ children }) {
     setIsPremiumModalOpen(false);
   };
 
+  const openSettingsMenu = () => {
+    setIsSettingsMenuOpen(true);
+  };
+
+  const closeSettingsMenu = () => {
+    setIsSettingsMenuOpen(false);
+  };
+
   const value = {
     selectedStory,
     setSelectedStory,
@@ -95,7 +104,10 @@ export function AppContextProvider({ children }) {
     openPremiumModal,
     closePremiumModal,
     isDarkMode,
-    toggleDarkMode
+    toggleDarkMode,
+    isSettingsMenuOpen,
+    openSettingsMenu,
+    closeSettingsMenu
   };
 
   return (
