@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { getAllStoryUsers, getStoryById, testUserImages } from '@/data/storyData';
+import { getAllStoryUsers, getStoryById } from '@/data/storyData';
 
 const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,122 +14,104 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   // Get all story users from centralized data
   const storyUsers = getAllStoryUsers();
 
-  // Debug function to validate all story data
-  const validateStoryData = () => {
-    console.log('===== VALIDATING ALL STORY DATA =====');
-    storyUsers.forEach((user, userIndex) => {
-      console.log(`User ${userIndex}: ${user.username} (ID: ${user.id})`);
-      console.log(`  Avatar: ${user.avatar}`);
-      console.log(`  Story Images Count: ${user.images?.length || 0}`);
-      if (user.images) {
-        user.images.forEach((img, imgIndex) => {
-          console.log(`    Image ${imgIndex}: ${img}`);
-        });
-      } else {
-        console.log(`  ERROR: No images array for user ${user.username}`);
-      }
-      console.log('---');
-    });
-    console.log('=====================================');
-  };
-
   useEffect(() => {
     if (story) {
       const userIndex = storyUsers.findIndex(user => user.id === story.id);
       setCurrentUserIndex(userIndex !== -1 ? userIndex : 0);
       setCurrentIndex(0);
       setProgress(0);
-      
-      // Run validation on modal open
-      validateStoryData();
-      
-      // Test the first user's images
-      testUserImages();
     }
   }, [story]);
 
-  // Auto-progression timer effect
+  // Simple auto-progression timer with better state management
   useEffect(() => {
-    if (!isOpen) {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-      }
-      return;
-    }
+    if (!isOpen) return;
 
     const currentUser = storyUsers[currentUserIndex];
-    if (!currentUser) return;
-    
-    const currentStoryImages = currentUser.images || [];
-    if (currentStoryImages.length === 0) return;
+    if (!currentUser || !currentUser.images) return;
 
-    // Clear any existing interval
+    console.log('=== STARTING TIMER ===');
+    console.log('User:', currentUser.username);
+    console.log('Current Image Index:', currentIndex);
+    console.log('Total Images:', currentUser.images.length);
+    console.log('======================');
+
+    // Clear any existing interval immediately
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
       progressIntervalRef.current = null;
+      console.log('Cleared existing interval');
     }
 
-    progressIntervalRef.current = setInterval(() => {
-      setProgress(prev => {
-        const newProgress = prev + (100 / (storyDuration / 100));
-        return newProgress >= 100 ? 100 : newProgress;
-      });
+    // Reset progress immediately
+    setProgress(0);
+
+    // Use a timeout to ensure the cleanup and reset happened
+    const timeoutId = setTimeout(() => {
+      let progressValue = 0;
+      
+      progressIntervalRef.current = setInterval(() => {
+        progressValue += 2; // 2% every 100ms = 5 seconds total
+        
+        // Update progress bar
+        setProgress(progressValue);
+        
+        // Only log every 10% to reduce spam
+        if (progressValue % 10 === 0) {
+          console.log('Progress updated:', progressValue + '%');
+        }
+
+        if (progressValue >= 100) {
+          // Clear the interval immediately
+          clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = null;
+
+          console.log('=== STORY COMPLETE ===');
+          console.log('Current Index:', currentIndex);
+          console.log('Current User Index:', currentUserIndex);
+          console.log('Images Length:', currentUser.images.length);
+          
+          // Use functional updates to avoid stale closures
+          setCurrentIndex(prevIndex => {
+            setCurrentUserIndex(prevUserIndex => {
+              // Get fresh user data
+              const currentUserData = storyUsers[prevUserIndex];
+              
+              if (prevIndex < currentUserData.images.length - 1) {
+                console.log('Moving to next story in same user:', prevIndex + 1);
+                return prevUserIndex; // Don't change user index
+              } else if (prevUserIndex < storyUsers.length - 1) {
+                console.log('Moving to next user:', prevUserIndex + 1);
+                return prevUserIndex + 1; // Move to next user
+              } else {
+                console.log('All stories complete, closing modal');
+                setTimeout(() => onClose?.(), 100);
+                return prevUserIndex; // Keep same user index
+              }
+            });
+            
+            // Return new story index
+            if (prevIndex < currentUser.images.length - 1) {
+              return prevIndex + 1; // Next story in same user
+            } else {
+              return 0; // First story of next user
+            }
+          });
+          
+          console.log('======================');
+        }
+      }, 100);
     }, 100);
 
+    // Cleanup function
     return () => {
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
         progressIntervalRef.current = null;
       }
+      clearTimeout(timeoutId);
     };
-  }, [isOpen]);
-
-  // Separate effect to handle progression when progress reaches 100%
-  useEffect(() => {
-    if (progress >= 100) {
-      // Clear any existing interval
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-      }
-
-      const currentUser = storyUsers[currentUserIndex];
-      if (!currentUser) return;
-      
-      const currentStoryImages = currentUser.images || [];
-      const hasMoreStoriesInCurrentUser = currentIndex < currentStoryImages.length - 1;
-      const hasMoreUsers = currentUserIndex < storyUsers.length - 1;
-
-      console.log('===== PROGRESSION LOGIC DEBUG =====');
-      console.log('Progress complete!');
-      console.log('Current Index:', currentIndex);
-      console.log('Current Story Images Length:', currentStoryImages.length);
-      console.log('Calculation: currentIndex < (length - 1) =', currentIndex, '<', (currentStoryImages.length - 1), '=', hasMoreStoriesInCurrentUser);
-      console.log('Has more stories in user:', hasMoreStoriesInCurrentUser);
-      console.log('Has more users:', hasMoreUsers);
-      console.log('====================================');
-
-      setTimeout(() => {
-        if (hasMoreStoriesInCurrentUser) {
-          // Move to next story in current user
-          console.log('Moving to next story:', currentIndex + 1);
-          setCurrentIndex(prev => prev + 1);
-          setProgress(0);
-        } else if (hasMoreUsers) {
-          // Move to next user
-          console.log('Moving to next user:', currentUserIndex + 1);
-          setCurrentUserIndex(prev => prev + 1);
-          setCurrentIndex(0);
-          setProgress(0);
-        } else {
-          // End of all stories, close modal
-          console.log('Closing modal - no more stories');
-          if (onClose) onClose();
-        }
-      }, 50);
-    }
-  }, [progress, currentIndex, currentUserIndex, onClose]);
+  }, [isOpen, currentUserIndex, currentIndex, onClose]);
 
   // Memoized callback functions for better performance
   const handleClose = useCallback(() => {
@@ -148,23 +130,29 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
 
   const currentUser = storyUsers[currentUserIndex];
   const storyImages = currentUser?.images || [];
+  const currentImageUrl = storyImages[currentIndex];
 
-  // Debug: Log current user data whenever it changes
+  // Debug: Log when image URL changes
   useEffect(() => {
-    if (currentUser) {
-      console.log('===== DEBUG: Current User Data =====');
-      console.log('User ID:', currentUser.id);
-      console.log('User Name:', currentUser.username);
-      console.log('Avatar:', currentUser.avatar);
-      console.log('Story Images Array:', currentUser.images);
-      console.log('Story Images Length:', currentUser.images?.length);
-      console.log('Current Index:', currentIndex);
-      console.log('Current Image URL:', currentUser.images?.[currentIndex]);
-      console.log('All Images:', currentUser.images?.map((img, idx) => `${idx}: ${img}`));
-      console.log('=====================================');
-    }
-  }, [currentUser, currentIndex]);  // Navigation functions with improved logic
+    console.log('=== IMAGE CHANGE DEBUG ===');
+    console.log('Current User Index:', currentUserIndex);
+    console.log('Current User:', currentUser?.username);
+    console.log('Current Image Index:', currentIndex);
+    console.log('Current Image URL:', currentImageUrl);
+    console.log('All Images for User:', storyImages);
+    console.log('=========================');
+  }, [currentUserIndex, currentIndex, currentImageUrl]);
+
+  // Navigation functions with improved logic
   const navigateToNextStory = () => {
+    console.log('Manual navigation: Next story');
+    
+    // Clear any existing timer
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+
     const hasMoreStoriesInCurrentUser = currentIndex < storyImages.length - 1;
     const hasMoreUsers = currentUserIndex < storyUsers.length - 1;
 
@@ -184,6 +172,14 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   };
 
   const navigateToPrevStory = () => {
+    console.log('Manual navigation: Previous story');
+    
+    // Clear any existing timer
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+
     const hasPrevStoriesInCurrentUser = currentIndex > 0;
     const hasPrevUsers = currentUserIndex > 0;
 
@@ -401,16 +397,19 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
 
         {/* Story image */}
         <img
-          src={storyImages[currentIndex] || 'https://via.placeholder.com/400x600?text=Loading'}
-          alt={`Story ${currentIndex + 1}`}
+          key={`${currentUserIndex}-${currentIndex}`}
+          src={currentImageUrl || 'https://via.placeholder.com/400x600?text=Loading'}
+          alt={`Story ${currentIndex + 1} of ${currentUser?.username}`}
           className="w-full h-full object-cover"
-          loading="lazy"
+          loading="eager"
           onError={(e) => {
-            console.error('Image failed to load:', storyImages[currentIndex]);
+            console.error('Image failed to load:', currentImageUrl);
+            console.error('User:', currentUser?.username, 'Index:', currentIndex);
             e.target.src = 'https://via.placeholder.com/400x600?text=Image+Not+Found';
           }}
           onLoad={() => {
-            console.log('Image loaded successfully:', storyImages[currentIndex]);
+            console.log('Image loaded successfully:', currentImageUrl);
+            console.log('For user:', currentUser?.username, 'Index:', currentIndex);
           }}
         />
       </div>
