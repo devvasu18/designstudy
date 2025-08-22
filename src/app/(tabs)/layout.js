@@ -14,7 +14,7 @@ function TabsLayoutContent({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const isHeaderScrolled = useScrollPosition(50);
-  const { selectedStory, setSelectedStory, notification, hideNotification } = useAppContext();
+  const { selectedStory, setSelectedStory, notification, hideNotification, isPremiumModalOpen } = useAppContext();
 
   // Debug log to track selectedStory changes
   React.useEffect(() => {
@@ -61,8 +61,8 @@ function TabsLayoutContent({ children }) {
         </main>
       </div>
 
-      {/* Bottom Navigation - Hide when story modal is open */}
-      {!selectedStory && (
+      {/* Bottom Navigation - Hide when story modal or premium modal is open */}
+      {!selectedStory && !isPremiumModalOpen && (
         <BottomNavigation 
           activeTab={getActiveTab()} 
           setActiveTab={handleTabChange} 

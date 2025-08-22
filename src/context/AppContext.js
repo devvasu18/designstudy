@@ -10,6 +10,7 @@ export function AppContextProvider({ children }) {
   const [notification, setNotification] = useState(null);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
   const [currentStory, setCurrentStory] = useState(null);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
@@ -29,6 +30,14 @@ export function AppContextProvider({ children }) {
     setCurrentStory(null);
   };
 
+  const openPremiumModal = () => {
+    setIsPremiumModalOpen(true);
+  };
+
+  const closePremiumModal = () => {
+    setIsPremiumModalOpen(false);
+  };
+
   const value = {
     selectedStory,
     setSelectedStory,
@@ -38,7 +47,10 @@ export function AppContextProvider({ children }) {
     isStoryModalOpen,
     currentStory,
     openStoryModal,
-    closeStoryModal
+    closeStoryModal,
+    isPremiumModalOpen,
+    openPremiumModal,
+    closePremiumModal
   };
 
   return (
