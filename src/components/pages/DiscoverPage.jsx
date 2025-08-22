@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Heart, MessageCircle, Star, Home, BarChart3, User } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
+import { getStoriesForDiscoverPage } from '@/data/storyData';
 
 const DiscoverPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,39 +12,8 @@ const DiscoverPage = () => {
   const { setSelectedStory } = useAppContext();
 
   useEffect(() => {
-    // Mock data matching the screenshot
-    setUsers([
-      { id: 1, username: 'divya_holi', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', hasStory: true, isVerified: false },
-      { id: 2, username: 'tejasvini', avatar: 'https://randomuser.me/api/portraits/men/22.jpg', hasStory: true, isVerified: false },
-      { id: 3, username: 'maahi_upa', avatar: 'https://randomuser.me/api/portraits/women/67.jpg', hasStory: true, isVerified: false },
-      { id: 4, username: 'aman_math', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', hasStory: true, isVerified: false },
-      { id: 5, username: 'hiteshgehi', avatar: 'https://randomuser.me/api/portraits/men/45.jpg', hasStory: true, isVerified: false },
-      { id: 6, username: 'rumit.meht', avatar: 'https://randomuser.me/api/portraits/men/28.jpg', hasStory: true, isVerified: false },
-      { id: 7, username: 'dilipksola', avatar: 'https://randomuser.me/api/portraits/women/33.jpg', hasStory: true, isVerified: false },
-      { id: 8, username: 'rajveer948', avatar: 'https://randomuser.me/api/portraits/men/41.jpg', hasStory: true, isVerified: false },
-      { id: 9, username: 'sharma_mon', avatar: 'https://randomuser.me/api/portraits/women/29.jpg', hasStory: true, isVerified: false },
-      { id: 10, username: 'priya_dev', avatar: 'https://randomuser.me/api/portraits/women/15.jpg', hasStory: true, isVerified: true },
-      { id: 11, username: 'rohit_kumar', avatar: 'https://randomuser.me/api/portraits/men/18.jpg', hasStory: true, isVerified: false },
-      { id: 12, username: 'sneha_art', avatar: 'https://randomuser.me/api/portraits/women/52.jpg', hasStory: true, isVerified: true },
-      { id: 13, username: 'vikash_23', avatar: 'https://randomuser.me/api/portraits/men/38.jpg', hasStory: true, isVerified: false },
-      { id: 14, username: 'anjali_99', avatar: 'https://randomuser.me/api/portraits/women/71.jpg', hasStory: true, isVerified: false },
-      { id: 15, username: 'arjun_fit', avatar: 'https://randomuser.me/api/portraits/men/55.jpg', hasStory: true, isVerified: true },
-      { id: 16, username: 'kavya_pic', avatar: 'https://randomuser.me/api/portraits/women/84.jpg', hasStory: true, isVerified: false },
-      { id: 17, username: 'deepak_travel', avatar: 'https://randomuser.me/api/portraits/men/62.jpg', hasStory: true, isVerified: false },
-      { id: 18, username: 'riya_music', avatar: 'https://randomuser.me/api/portraits/women/37.jpg', hasStory: true, isVerified: true },
-      { id: 19, username: 'sahil_code', avatar: 'https://randomuser.me/api/portraits/men/75.jpg', hasStory: true, isVerified: false },
-      { id: 20, username: 'pooja_dance', avatar: 'https://randomuser.me/api/portraits/women/91.jpg', hasStory: true, isVerified: false },
-      { id: 21, username: 'karan_gym', avatar: 'https://randomuser.me/api/portraits/men/48.jpg', hasStory: true, isVerified: false },
-      { id: 22, username: 'neha_food', avatar: 'https://randomuser.me/api/portraits/women/26.jpg', hasStory: true, isVerified: true },
-      { id: 23, username: 'amit_bike', avatar: 'https://randomuser.me/api/portraits/men/83.jpg', hasStory: true, isVerified: false },
-      { id: 24, username: 'shreya_yoga', avatar: 'https://randomuser.me/api/portraits/women/58.jpg', hasStory: true, isVerified: false },
-      { id: 25, username: 'harsh_gamer', avatar: 'https://randomuser.me/api/portraits/men/27.jpg', hasStory: false, isVerified: false },
-      { id: 26, username: 'isha_books', avatar: 'https://randomuser.me/api/portraits/women/43.jpg', hasStory: false, isVerified: false },
-      { id: 27, username: 'rahul_tech', avatar: 'https://randomuser.me/api/portraits/men/59.jpg', hasStory: true, isVerified: true },
-      { id: 28, username: 'tanya_art', avatar: 'https://randomuser.me/api/portraits/women/72.jpg', hasStory: false, isVerified: false },
-      { id: 29, username: 'gaurav_sports', avatar: 'https://randomuser.me/api/portraits/men/34.jpg', hasStory: true, isVerified: false },
-      { id: 30, username: 'meera_fashion', avatar: 'https://randomuser.me/api/portraits/women/19.jpg', hasStory: true, isVerified: true },
-    ]);
+    // Load users from centralized story data
+    setUsers(getStoriesForDiscoverPage());
   }, []);
 
   const filteredUsers = users.filter(user => 

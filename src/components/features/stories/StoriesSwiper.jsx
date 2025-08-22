@@ -1,14 +1,18 @@
 'use client';
-import { useState } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
+import { getStoriesForHomePage } from '@/data/storyData';
 
-const StoriesSwiper = ({ onStoryClick, isSticky }) => {
-  const [stories] = useState([
-    { id: 2, username: 'bestfriend_sara', avatar: 'https://randomuser.me/api/portraits/women/25.jpg', hasNewStory: true },
-    { id: 3, username: 'cousin_raj', avatar: 'https://randomuser.me/api/portraits/men/30.jpg', hasNewStory: false },
-    { id: 4, username: 'sister_nisha', avatar: 'https://randomuser.me/api/portraits/women/40.jpg', hasNewStory: true },
-    { id: 5, username: 'brother_sam', avatar: 'https://randomuser.me/api/portraits/men/50.jpg', hasNewStory: false },
-    { id: 6, username: 'friend_riya', avatar: 'https://randomuser.me/api/portraits/women/60.jpg', hasNewStory: true },
-  ]);
+const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
+  const [stories, setStories] = useState([]);
+
+  useEffect(() => {
+    // Load stories from centralized data (first 5 users from the same 20)
+    setStories(getStoriesForHomePage(5));
+  }, []);
+
+  const handleStoryClick = useCallback((story) => {
+    onStoryClick?.(story);
+  }, [onStoryClick]);
 
   return (
     <div className={`bg-white px-3 py-3 border-b border-gray-100 transition-all duration-300 
@@ -21,7 +25,7 @@ const StoriesSwiper = ({ onStoryClick, isSticky }) => {
         {stories.map((story) => (
           <button 
             key={story.id}
-            onClick={() => onStoryClick?.(story)}
+            onClick={() => handleStoryClick(story)}
             className="flex flex-col items-center space-y-2 flex-shrink-0 group"
           >
             <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
@@ -46,6 +50,8 @@ const StoriesSwiper = ({ onStoryClick, isSticky }) => {
       </div>
     </div>
   );
-};
+});
+
+StoriesSwiper.displayName = 'StoriesSwiper';
 
 export default StoriesSwiper;

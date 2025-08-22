@@ -1,129 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Heart, MessageCircle, Share, ArrowLeft, Play, Pause } from 'lucide-react';
-const StoryViewModal = ({ story, isOpen, onClose }) => {
+import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { getAllStoryUsers, getStoryById, testUserImages } from '@/data/storyData';
+
+const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
   const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
   const touchEndRef = useRef({ x: 0, y: 0, time: 0 });
   const progressIntervalRef = useRef(null);
   const storyDuration = 5000; // 5 seconds per story
   
-  const storyUsers = [
-    // Close friends/family stories for home page
-    {
-      id: 1,
-      username: 'bestfriend_sara',
-      avatar: 'https://randomuser.me/api/portraits/women/25.jpg',
-      timeAgo: '30m',
-      images: [
-        'https://randomuser.me/api/portraits/women/25.jpg',
-        'https://picsum.photos/400/600?random=11',
-        'https://picsum.photos/400/600?random=12'
-      ]
-    },
-    {
-      id: 2,
-      username: 'cousin_raj',
-      avatar: 'https://randomuser.me/api/portraits/men/30.jpg',
-      timeAgo: '1h',
-      images: [
-        'https://randomuser.me/api/portraits/men/30.jpg',
-        'https://picsum.photos/400/600?random=13',
-        'https://picsum.photos/400/600?random=14'
-      ]
-    },
-    {
-      id: 3,
-      username: 'sister_nisha',
-      avatar: 'https://randomuser.me/api/portraits/women/40.jpg',
-      timeAgo: '2h',
-      images: [
-        'https://randomuser.me/api/portraits/women/40.jpg',
-        'https://picsum.photos/400/600?random=15',
-        'https://picsum.photos/400/600?random=16'
-      ]
-    },
-    {
-      id: 4,
-      username: 'brother_sam',
-      avatar: 'https://randomuser.me/api/portraits/men/50.jpg',
-      timeAgo: '3h',
-      images: [
-        'https://randomuser.me/api/portraits/men/50.jpg',
-        'https://picsum.photos/400/600?random=17',
-        'https://picsum.photos/400/600?random=18'
-      ]
-    },
-    {
-      id: 5,
-      username: 'friend_riya',
-      avatar: 'https://randomuser.me/api/portraits/women/60.jpg',
-      timeAgo: '4h',
-      images: [
-        'https://randomuser.me/api/portraits/women/60.jpg',
-        'https://picsum.photos/400/600?random=19',
-        'https://picsum.photos/400/600?random=20'
-      ]
-    },
-    // Discover page users (different from home)
-    {
-      id: 6,
-      username: 'divya_holi',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      timeAgo: '1h',
-      images: [
-        'https://randomuser.me/api/portraits/women/44.jpg',
-        'https://picsum.photos/400/600?random=21',
-        'https://picsum.photos/400/600?random=22'
-      ]
-    },
-    {
-      id: 7,
-      username: 'tejasvini',
-      avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
-      timeAgo: '2h',
-      images: [
-        'https://randomuser.me/api/portraits/men/22.jpg',
-        'https://picsum.photos/400/600?random=23',
-        'https://picsum.photos/400/600?random=24'
-      ]
-    },
-    {
-      id: 8,
-      username: 'maahi_upa',
-      avatar: 'https://randomuser.me/api/portraits/women/67.jpg',
-      timeAgo: '3h',
-      images: [
-        'https://randomuser.me/api/portraits/women/67.jpg',
-        'https://picsum.photos/400/600?random=25',
-        'https://picsum.photos/400/600?random=26'
-      ]
-    },
-    {
-      id: 9,
-      username: 'aman_math',
-      avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-      timeAgo: '4h',
-      images: [
-        'https://randomuser.me/api/portraits/men/32.jpg',
-        'https://picsum.photos/400/600?random=27',
-        'https://picsum.photos/400/600?random=28'
-      ]
-    },
-    {
-      id: 10,
-      username: 'hiteshgehi',
-      avatar: 'https://randomuser.me/api/portraits/men/45.jpg',
-      timeAgo: '5h',
-      images: [
-        'https://randomuser.me/api/portraits/men/45.jpg',
-        'https://picsum.photos/400/600?random=29',
-        'https://picsum.photos/400/600?random=30'
-      ]
-    }
-  ];
+  // Get all story users from centralized data
+  const storyUsers = getAllStoryUsers();
+
+  // Debug function to validate all story data
+  const validateStoryData = () => {
+    console.log('===== VALIDATING ALL STORY DATA =====');
+    storyUsers.forEach((user, userIndex) => {
+      console.log(`User ${userIndex}: ${user.username} (ID: ${user.id})`);
+      console.log(`  Avatar: ${user.avatar}`);
+      console.log(`  Story Images Count: ${user.images?.length || 0}`);
+      if (user.images) {
+        user.images.forEach((img, imgIndex) => {
+          console.log(`    Image ${imgIndex}: ${img}`);
+        });
+      } else {
+        console.log(`  ERROR: No images array for user ${user.username}`);
+      }
+      console.log('---');
+    });
+    console.log('=====================================');
+  };
 
   useEffect(() => {
     if (story) {
@@ -131,13 +39,18 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       setCurrentUserIndex(userIndex !== -1 ? userIndex : 0);
       setCurrentIndex(0);
       setProgress(0);
-      setIsPlaying(true);
+      
+      // Run validation on modal open
+      validateStoryData();
+      
+      // Test the first user's images
+      testUserImages();
     }
   }, [story]);
 
   // Auto-progression timer effect
   useEffect(() => {
-    if (!isOpen || !isPlaying) {
+    if (!isOpen) {
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
         progressIntervalRef.current = null;
@@ -160,34 +73,7 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
     progressIntervalRef.current = setInterval(() => {
       setProgress(prev => {
         const newProgress = prev + (100 / (storyDuration / 100));
-        
-        if (newProgress >= 100) {
-          // Auto advance to next story
-          const hasMoreStoriesInCurrentUser = currentIndex < currentStoryImages.length - 1;
-          const hasMoreUsers = currentUserIndex < storyUsers.length - 1;
-
-          if (hasMoreStoriesInCurrentUser) {
-            // Move to next story in current user
-            setTimeout(() => {
-              setCurrentIndex(prev => prev + 1);
-              setProgress(0);
-            }, 50);
-            return 0;
-          } else if (hasMoreUsers) {
-            // Move to next user
-            setTimeout(() => {
-              setCurrentUserIndex(prev => prev + 1);
-              setCurrentIndex(0);
-              setProgress(0);
-            }, 50);
-            return 0;
-          } else {
-            // End of all stories, close modal
-            if (onClose) onClose();
-            return 100;
-          }
-        }
-        return newProgress;
+        return newProgress >= 100 ? 100 : newProgress;
       });
     }, 100);
 
@@ -197,17 +83,58 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
         progressIntervalRef.current = null;
       }
     };
-  }, [isOpen, isPlaying, currentIndex, currentUserIndex, onClose]);
+  }, [isOpen]);
 
-  // Reset progress when story changes (remove setTimeout conflicts)
+  // Separate effect to handle progression when progress reaches 100%
   useEffect(() => {
-    setProgress(0);
-    // Clear any pending timeouts
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = null;
+    if (progress >= 100) {
+      // Clear any existing interval
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+
+      const currentUser = storyUsers[currentUserIndex];
+      if (!currentUser) return;
+      
+      const currentStoryImages = currentUser.images || [];
+      const hasMoreStoriesInCurrentUser = currentIndex < currentStoryImages.length - 1;
+      const hasMoreUsers = currentUserIndex < storyUsers.length - 1;
+
+      console.log('===== PROGRESSION LOGIC DEBUG =====');
+      console.log('Progress complete!');
+      console.log('Current Index:', currentIndex);
+      console.log('Current Story Images Length:', currentStoryImages.length);
+      console.log('Calculation: currentIndex < (length - 1) =', currentIndex, '<', (currentStoryImages.length - 1), '=', hasMoreStoriesInCurrentUser);
+      console.log('Has more stories in user:', hasMoreStoriesInCurrentUser);
+      console.log('Has more users:', hasMoreUsers);
+      console.log('====================================');
+
+      setTimeout(() => {
+        if (hasMoreStoriesInCurrentUser) {
+          // Move to next story in current user
+          console.log('Moving to next story:', currentIndex + 1);
+          setCurrentIndex(prev => prev + 1);
+          setProgress(0);
+        } else if (hasMoreUsers) {
+          // Move to next user
+          console.log('Moving to next user:', currentUserIndex + 1);
+          setCurrentUserIndex(prev => prev + 1);
+          setCurrentIndex(0);
+          setProgress(0);
+        } else {
+          // End of all stories, close modal
+          console.log('Closing modal - no more stories');
+          if (onClose) onClose();
+        }
+      }, 50);
     }
-  }, [currentIndex, currentUserIndex]);
+  }, [progress, currentIndex, currentUserIndex, onClose]);
+
+  // Memoized callback functions for better performance
+  const handleClose = useCallback(() => {
+    onClose?.();
+  }, [onClose]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -222,7 +149,21 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
   const currentUser = storyUsers[currentUserIndex];
   const storyImages = currentUser?.images || [];
 
-  // Navigation functions with improved logic
+  // Debug: Log current user data whenever it changes
+  useEffect(() => {
+    if (currentUser) {
+      console.log('===== DEBUG: Current User Data =====');
+      console.log('User ID:', currentUser.id);
+      console.log('User Name:', currentUser.username);
+      console.log('Avatar:', currentUser.avatar);
+      console.log('Story Images Array:', currentUser.images);
+      console.log('Story Images Length:', currentUser.images?.length);
+      console.log('Current Index:', currentIndex);
+      console.log('Current Image URL:', currentUser.images?.[currentIndex]);
+      console.log('All Images:', currentUser.images?.map((img, idx) => `${idx}: ${img}`));
+      console.log('=====================================');
+    }
+  }, [currentUser, currentIndex]);  // Navigation functions with improved logic
   const navigateToNextStory = () => {
     const hasMoreStoriesInCurrentUser = currentIndex < storyImages.length - 1;
     const hasMoreUsers = currentUserIndex < storyUsers.length - 1;
@@ -261,11 +202,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
     // If no previous stories and no previous users, do nothing
   };
 
-  // Pause/Play functions
-  const togglePlayPause = () => {
-    setIsPlaying(prev => !prev);
-  };
-
   // Enhanced tap handler with proper event handling
   const handleStoryTap = (event) => {
     event.preventDefault();
@@ -294,8 +230,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       y: touch.clientY,
       time: Date.now()
     };
-    // Pause story on touch start (for long press)
-    setIsPlaying(false);
   };
 
   // Touch end handler with swipe detection
@@ -306,9 +240,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
       y: touch.clientY,
       time: Date.now()
     };
-
-    // Resume story on touch end
-    setIsPlaying(true);
 
     const deltaX = touchEndRef.current.x - touchStartRef.current.x;
     const deltaY = touchEndRef.current.y - touchStartRef.current.y;
@@ -412,14 +343,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
           </div>
           
           <div className="flex items-center space-x-3">
-            {/* Play/Pause Button */}
-            <button 
-              onClick={togglePlayPause}
-              className="text-white p-2 hover:bg-white/20 rounded-full transition-all duration-200 hover:scale-110"
-            >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            </button>
-            
             {/* Close Button */}
             <button 
               onClick={onClose}
@@ -443,7 +366,7 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
                 }`}
                 style={index === currentIndex ? {
                   width: `${progress}%`,
-                  transition: isPlaying ? 'width 0.1s linear' : 'none'
+                  transition: 'width 0.1s linear'
                 } : {}}
               />
             </div>
@@ -457,9 +380,6 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
         onClick={handleStoryTap}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onMouseDown={() => setIsPlaying(false)}
-        onMouseUp={() => setIsPlaying(true)}
-        onMouseLeave={() => setIsPlaying(true)}
         style={{ userSelect: 'none', touchAction: 'none' }}
       >
         {/* Invisible tap zones for better UX */}
@@ -481,43 +401,23 @@ const StoryViewModal = ({ story, isOpen, onClose }) => {
 
         {/* Story image */}
         <img
-          src={storyImages[currentIndex]}
+          src={storyImages[currentIndex] || 'https://via.placeholder.com/400x600?text=Loading'}
           alt={`Story ${currentIndex + 1}`}
           className="w-full h-full object-cover"
           loading="lazy"
+          onError={(e) => {
+            console.error('Image failed to load:', storyImages[currentIndex]);
+            e.target.src = 'https://via.placeholder.com/400x600?text=Image+Not+Found';
+          }}
+          onLoad={() => {
+            console.log('Image loaded successfully:', storyImages[currentIndex]);
+          }}
         />
-
-        {/* Pause indicator overlay */}
-        {!isPlaying && (
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
-            <div className="bg-white/90 rounded-full p-4">
-              <Pause className="w-8 h-8 text-black" />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom Actions */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 safe-area-bottom">
-        <div className="flex items-center justify-between max-w-md mx-auto">
-          <div className="flex space-x-3">
-            <button className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110">
-              <Heart className="w-5 h-5 text-white" />
-            </button>
-            <button className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110">
-              <MessageCircle className="w-5 h-5 text-white" />
-            </button>
-            <button className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200 hover:scale-110">
-              <Share className="w-5 h-5 text-white" />
-            </button>
-          </div>
-          <div className="text-white/80 text-sm font-medium px-3 py-1 bg-black/20 backdrop-blur-sm rounded-full">
-            {currentIndex + 1} / {storyImages.length}
-          </div>
-        </div>
       </div>
     </div>
   );
-};
+});
+
+StoryViewModal.displayName = 'StoryViewModal';
 
 export default StoryViewModal;
