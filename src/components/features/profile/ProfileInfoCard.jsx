@@ -45,7 +45,7 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
   
   return (
     <div className="bg-white pt-0">
-      <div className="mx-4 mb-4 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-3xl p-4 border border-purple-100/50 shadow-md backdrop-blur-sm">
+      <div className="mx-4 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-3xl p-4 border border-purple-100/50 shadow-md backdrop-blur-sm">
         {/* Profile Picture and Name */}
         <div className="flex items-center space-x-4 mb-4">
           <div className="relative group">
@@ -122,7 +122,7 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
         {/* Quick Actions */}
         <div className="flex gap-2">
           <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg tracking-wide">
-            Edit Profile
+            Analyse Profile
           </button>
           <button className="flex-1 bg-white/70 hover:bg-white text-gray-700 text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg border border-gray-200 tracking-wide">
             Share Profile

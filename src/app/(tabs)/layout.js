@@ -43,7 +43,7 @@ function TabsLayoutContent({ children }) {
           position: 'relative',
           width: '100%',
           minHeight: '100vh',
-          paddingBottom: selectedStory ? '0px' : '80px', // Remove extra padding when story is open
+          paddingBottom: selectedStory ? '0px' : '0px', // Remove extra padding when story is open
           boxSizing: 'border-box'
         }}
       >
@@ -52,7 +52,7 @@ function TabsLayoutContent({ children }) {
           className="min-h-[calc(100vh-160px)]"
           style={{
             paddingBottom: '24px',
-            marginBottom: selectedStory ? '0px' : '80px', // Remove margin when story is open
+            marginBottom: selectedStory ? '0px' : '30px', // Remove margin when story is open
             position: 'relative',
             zIndex: 1
           }}
