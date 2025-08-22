@@ -103,7 +103,7 @@ export default function ProfileDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 text-gray-900 overflow-x-hidden overflow-y-auto scrollbar-hide">
       <div className="max-w-7xl mx-auto p-5">
         {/* Header */}
         <div className="text-center mb-10 pt-10">

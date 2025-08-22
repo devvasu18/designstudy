@@ -4,16 +4,48 @@
 // - Discover page (all 20 users)
 // - Story modal (unified experience for both pages)
 
-// Optimized image URLs for faster loading
+// Optimized image URLs for faster loading with multiple fallback sources
 const getAvatarUrl = (id) => `https://randomuser.me/api/portraits/${id % 2 === 0 ? 'men' : 'women'}/${20 + id}.jpg`;
-const getStoryUrl = (userId, storyIndex) => `https://picsum.photos/300/500?random=${userId * 10 + storyIndex}`;
 
-// Helper function to create image array
+// Multiple fallback sources for story images
+const getStoryUrl = (userId, storyIndex) => {
+  // Try different image services for better reliability
+  const services = [
+    `https://picsum.photos/300/500?random=${userId * 10 + storyIndex}`,
+    `https://source.unsplash.com/300x500/?nature,landscape&sig=${userId * 10 + storyIndex}`,
+    `https://images.unsplash.com/photo-${1500000000000 + userId * 1000 + storyIndex}?w=300&h=500&fit=crop`,
+    `https://via.placeholder.com/300x500/4F46E5/FFFFFF?text=Story+${storyIndex}`
+  ];
+  
+  return services[0]; // Primary service
+};
+
+// Fallback URLs for when primary fails
+const getFallbackStoryUrl = (userId, storyIndex) => {
+  return `https://via.placeholder.com/300x500/${getRandomColor()}/FFFFFF?text=Story+${storyIndex}`;
+};
+
+// Generate random colors for placeholder
+const getRandomColor = () => {
+  const colors = ['4F46E5', '10B981', 'F59E0B', 'EF4444', '8B5CF6', '06B6D4', 'F97316'];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+// Helper function to create image array with fallback support
 const createImageArray = (userId) => {
   return [
     getAvatarUrl(userId),
     getStoryUrl(userId, 1),
     getStoryUrl(userId, 2),
+  ];
+};
+
+// Helper function to create fallback image array
+const createFallbackImageArray = (userId) => {
+  return [
+    `https://via.placeholder.com/300x500/4F46E5/FFFFFF?text=User+${userId}`,
+    getFallbackStoryUrl(userId, 1),
+    getFallbackStoryUrl(userId, 2),
   ];
 };
 
@@ -26,7 +58,8 @@ export const storyUsers = [
     timeAgo: '30m',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(1)
+    images: createImageArray(1),
+    fallbackImages: createFallbackImageArray(1)
   },
   {
     id: 2,
@@ -35,7 +68,8 @@ export const storyUsers = [
     timeAgo: '1h',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(2)
+    images: createImageArray(2),
+    fallbackImages: createFallbackImageArray(2)
   },
   {
     id: 3,
@@ -44,7 +78,8 @@ export const storyUsers = [
     timeAgo: '1h',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(3)
+    images: createImageArray(3),
+    fallbackImages: createFallbackImageArray(3)
   },
   {
     id: 4,
@@ -53,7 +88,8 @@ export const storyUsers = [
     timeAgo: '2h',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(4)
+    images: createImageArray(4),
+    fallbackImages: createFallbackImageArray(4)
   },
   {
     id: 5,
@@ -62,202 +98,158 @@ export const storyUsers = [
     timeAgo: '2h',
     hasNewStory: true,
     isVerified: false,
-    images: createImageArray(5)
+    images: createImageArray(5),
+    fallbackImages: createFallbackImageArray(5)
   },
   {
     id: 6,
-    username: 'rumit.meht',
-    avatar: 'https://randomuser.me/api/portraits/men/28.jpg',
+    username: 'rahul_kumar',
+    avatar: getAvatarUrl(6),
     timeAgo: '3h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/28.jpg',
-      'https://picsum.photos/400/600?random=61',
-      'https://picsum.photos/400/600?random=62'
-    ]
+    images: createImageArray(6),
+    fallbackImages: createFallbackImageArray(6)
   },
   {
     id: 7,
-    username: 'dilipksola',
-    avatar: 'https://randomuser.me/api/portraits/women/33.jpg',
+    username: 'sneha_patel',
+    avatar: getAvatarUrl(7),
     timeAgo: '3h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/women/33.jpg',
-      'https://picsum.photos/400/600?random=71',
-      'https://picsum.photos/400/600?random=72'
-    ]
+    images: createImageArray(7),
+    fallbackImages: createFallbackImageArray(7)
   },
   {
     id: 8,
-    username: 'rajveer948',
-    avatar: 'https://randomuser.me/api/portraits/men/41.jpg',
+    username: 'amit_shah',
+    avatar: getAvatarUrl(8),
     timeAgo: '4h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/41.jpg',
-      'https://picsum.photos/400/600?random=81',
-      'https://picsum.photos/400/600?random=82'
-    ]
+    images: createImageArray(8),
+    fallbackImages: createFallbackImageArray(8)
   },
   {
     id: 9,
-    username: 'sharma_mon',
-    avatar: 'https://randomuser.me/api/portraits/women/29.jpg',
+    username: 'priya_singh',
+    avatar: getAvatarUrl(9),
     timeAgo: '4h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/women/29.jpg',
-      'https://picsum.photos/400/600?random=91',
-      'https://picsum.photos/400/600?random=92'
-    ]
+    images: createImageArray(9),
+    fallbackImages: createFallbackImageArray(9)
   },
   {
     id: 10,
-    username: 'priya_dev',
-    avatar: 'https://randomuser.me/api/portraits/women/15.jpg',
+    username: 'karan_gupta',
+    avatar: getAvatarUrl(10),
     timeAgo: '5h',
     hasNewStory: true,
-    isVerified: true,
-    images: [
-      'https://randomuser.me/api/portraits/women/15.jpg',
-      'https://picsum.photos/400/600?random=101',
-      'https://picsum.photos/400/600?random=102'
-    ]
+    isVerified: false,
+    images: createImageArray(10),
+    fallbackImages: createFallbackImageArray(10)
   },
   {
     id: 11,
-    username: 'rohit_kumar',
-    avatar: 'https://randomuser.me/api/portraits/men/18.jpg',
+    username: 'natasha_roy',
+    avatar: getAvatarUrl(11),
     timeAgo: '5h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/18.jpg',
-      'https://picsum.photos/400/600?random=111',
-      'https://picsum.photos/400/600?random=112'
-    ]
+    images: createImageArray(11),
+    fallbackImages: createFallbackImageArray(11)
   },
   {
     id: 12,
-    username: 'sneha_art',
-    avatar: 'https://randomuser.me/api/portraits/women/52.jpg',
+    username: 'vivek_reddy',
+    avatar: getAvatarUrl(12),
     timeAgo: '6h',
     hasNewStory: true,
-    isVerified: true,
-    images: [
-      'https://randomuser.me/api/portraits/women/52.jpg',
-      'https://picsum.photos/400/600?random=121',
-      'https://picsum.photos/400/600?random=122'
-    ]
+    isVerified: false,
+    images: createImageArray(12),
+    fallbackImages: createFallbackImageArray(12)
   },
   {
     id: 13,
-    username: 'vikash_23',
-    avatar: 'https://randomuser.me/api/portraits/men/38.jpg',
+    username: 'deepika_jain',
+    avatar: getAvatarUrl(13),
     timeAgo: '6h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/38.jpg',
-      'https://picsum.photos/400/600?random=131',
-      'https://picsum.photos/400/600?random=132'
-    ]
+    images: createImageArray(13),
+    fallbackImages: createFallbackImageArray(13)
   },
   {
     id: 14,
-    username: 'anjali_99',
-    avatar: 'https://randomuser.me/api/portraits/women/71.jpg',
+    username: 'rohit_agarwal',
+    avatar: getAvatarUrl(14),
     timeAgo: '7h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/women/71.jpg',
-      'https://picsum.photos/400/600?random=141',
-      'https://picsum.photos/400/600?random=142'
-    ]
+    images: createImageArray(14),
+    fallbackImages: createFallbackImageArray(14)
   },
   {
     id: 15,
-    username: 'arjun_fit',
-    avatar: 'https://randomuser.me/api/portraits/men/55.jpg',
+    username: 'kavya_nair',
+    avatar: getAvatarUrl(15),
     timeAgo: '7h',
     hasNewStory: true,
-    isVerified: true,
-    images: [
-      'https://randomuser.me/api/portraits/men/55.jpg',
-      'https://picsum.photos/400/600?random=151',
-      'https://picsum.photos/400/600?random=152'
-    ]
+    isVerified: false,
+    images: createImageArray(15),
+    fallbackImages: createFallbackImageArray(15)
   },
   {
     id: 16,
-    username: 'kavya_pic',
-    avatar: 'https://randomuser.me/api/portraits/women/84.jpg',
+    username: 'suresh_bansal',
+    avatar: getAvatarUrl(16),
     timeAgo: '8h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/women/84.jpg',
-      'https://picsum.photos/400/600?random=161',
-      'https://picsum.photos/400/600?random=162'
-    ]
+    images: createImageArray(16),
+    fallbackImages: createFallbackImageArray(16)
   },
   {
     id: 17,
-    username: 'deepak_travel',
-    avatar: 'https://randomuser.me/api/portraits/men/62.jpg',
+    username: 'pooja_malhotra',
+    avatar: getAvatarUrl(17),
     timeAgo: '8h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/62.jpg',
-      'https://picsum.photos/400/600?random=171',
-      'https://picsum.photos/400/600?random=172'
-    ]
+    images: createImageArray(17),
+    fallbackImages: createFallbackImageArray(17)
   },
   {
     id: 18,
-    username: 'riya_music',
-    avatar: 'https://randomuser.me/api/portraits/women/37.jpg',
+    username: 'ajay_kapoor',
+    avatar: getAvatarUrl(18),
     timeAgo: '9h',
     hasNewStory: true,
-    isVerified: true,
-    images: [
-      'https://randomuser.me/api/portraits/women/37.jpg',
-      'https://picsum.photos/400/600?random=181',
-      'https://picsum.photos/400/600?random=182'
-    ]
+    isVerified: false,
+    images: createImageArray(18),
+    fallbackImages: createFallbackImageArray(18)
   },
   {
     id: 19,
-    username: 'sahil_code',
-    avatar: 'https://randomuser.me/api/portraits/men/75.jpg',
+    username: 'reena_chopra',
+    avatar: getAvatarUrl(19),
     timeAgo: '9h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/men/75.jpg',
-      'https://picsum.photos/400/600?random=191',
-      'https://picsum.photos/400/600?random=192'
-    ]
+    images: createImageArray(19),
+    fallbackImages: createFallbackImageArray(19)
   },
   {
     id: 20,
-    username: 'pooja_dance',
-    avatar: 'https://randomuser.me/api/portraits/women/91.jpg',
+    username: 'manish_goel',
+    avatar: getAvatarUrl(20),
     timeAgo: '10h',
     hasNewStory: true,
     isVerified: false,
-    images: [
-      'https://randomuser.me/api/portraits/women/91.jpg',
-      'https://picsum.photos/400/600?random=201',
-      'https://picsum.photos/400/600?random=202'
-    ]
+    images: createImageArray(20),
+    fallbackImages: createFallbackImageArray(20)
   }
 ];
 

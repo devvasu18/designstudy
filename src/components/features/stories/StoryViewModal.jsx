@@ -8,6 +8,8 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   const [progress, setProgress] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
   const [preloadedImages, setPreloadedImages] = useState(new Set());
+  const [failedImages, setFailedImages] = useState(new Set());
+  const [currentImageSource, setCurrentImageSource] = useState('primary'); // 'primary' or 'fallback'
   const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
   const touchEndRef = useRef({ x: 0, y: 0, time: 0 });
   const progressIntervalRef = useRef(null);
@@ -16,12 +18,32 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
   // Get all story users from centralized data
   const storyUsers = getAllStoryUsers();
 
+  // Get current image URL with fallback support
+  const getCurrentImageUrl = useCallback(() => {
+    const currentUser = storyUsers[currentUserIndex];
+    if (!currentUser) return null;
+
+    const primaryUrl = currentUser.images?.[currentIndex];
+    const fallbackUrl = currentUser.fallbackImages?.[currentIndex];
+    
+    if (currentImageSource === 'primary' && primaryUrl && !failedImages.has(primaryUrl)) {
+      return primaryUrl;
+    } else if (fallbackUrl && !failedImages.has(fallbackUrl)) {
+      return fallbackUrl;
+    }
+    
+    return 'https://via.placeholder.com/400x600?text=Image+Not+Available';
+  }, [currentUserIndex, currentIndex, storyUsers, currentImageSource, failedImages]);
+
+  const currentImageUrl = getCurrentImageUrl();
+
   useEffect(() => {
     if (story) {
       const userIndex = storyUsers.findIndex(user => user.id === story.id);
       setCurrentUserIndex(userIndex !== -1 ? userIndex : 0);
       setCurrentIndex(0);
       setProgress(0);
+      setCurrentImageSource('primary'); // Reset to primary source for new story
     }
   }, [story]);
 
@@ -47,10 +69,20 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
       if (currentUser?.images) {
         console.log('Preloading images for user:', currentUser.username);
         currentUser.images.forEach(url => {
-          preloadImage(url).catch(err => 
-            console.warn('Failed to preload:', url, err)
-          );
+          preloadImage(url).catch(err => {
+            console.warn('Failed to preload primary:', url, err);
+            setFailedImages(prev => new Set([...prev, url]));
+          });
         });
+        
+        // Also preload fallback images
+        if (currentUser.fallbackImages) {
+          currentUser.fallbackImages.forEach(url => {
+            preloadImage(url).catch(err => 
+              console.warn('Failed to preload fallback:', url, err)
+            );
+          });
+        }
       }
 
       // Preload next user's images too for smoother transitions
@@ -58,10 +90,20 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
       if (nextUser?.images) {
         console.log('Preloading next user images:', nextUser.username);
         nextUser.images.forEach(url => {
-          preloadImage(url).catch(err => 
-            console.warn('Failed to preload next user:', url, err)
-          );
+          preloadImage(url).catch(err => {
+            console.warn('Failed to preload next user:', url, err);
+            setFailedImages(prev => new Set([...prev, url]));
+          });
         });
+        
+        // Also preload next user's fallback images
+        if (nextUser.fallbackImages) {
+          nextUser.fallbackImages.forEach(url => {
+            preloadImage(url).catch(err => 
+              console.warn('Failed to preload next user fallback:', url, err)
+            );
+          });
+        }
       }
     };
 
@@ -175,7 +217,6 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
 
   const currentUser = storyUsers[currentUserIndex];
   const storyImages = currentUser?.images || [];
-  const currentImageUrl = storyImages[currentIndex];
 
   // Debug: Log when image URL changes and handle loading state
   useEffect(() => {
@@ -184,8 +225,12 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
     console.log('Current User:', currentUser?.username);
     console.log('Current Image Index:', currentIndex);
     console.log('Current Image URL:', currentImageUrl);
+    console.log('Image Source:', currentImageSource);
     console.log('Image Preloaded:', preloadedImages.has(currentImageUrl));
     console.log('=========================');
+    
+    // Reset image source when changing stories
+    setCurrentImageSource('primary');
     
     // Set loading state based on preload status
     if (currentImageUrl && !preloadedImages.has(currentImageUrl)) {
@@ -193,7 +238,7 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
     } else if (currentImageUrl && preloadedImages.has(currentImageUrl)) {
       setImageLoading(false);
     }
-  }, [currentUserIndex, currentIndex, currentImageUrl, preloadedImages]);
+  }, [currentUserIndex, currentIndex, currentImageUrl, currentImageSource, preloadedImages]);
 
   // Navigation functions with improved logic
   const navigateToNextStory = () => {
@@ -459,7 +504,7 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
           
           {/* Main image */}
           <img
-            key={`${currentUserIndex}-${currentIndex}`}
+            key={`${currentUserIndex}-${currentIndex}-${currentImageSource}`}
             src={currentImageUrl || 'https://via.placeholder.com/400x600?text=Loading'}
             alt={`Story ${currentIndex + 1} of ${currentUser?.username}`}
             className={`w-full h-full object-cover transition-opacity duration-300 ${
@@ -467,12 +512,25 @@ const StoryViewModal = memo(({ story, isOpen, onClose }) => {
             }`}
             loading="eager"
             onError={(e) => {
-              console.error('Image failed to load:', currentImageUrl);
+              console.error('Image failed to load:', currentImageUrl, 'Source:', currentImageSource);
+              setFailedImages(prev => new Set([...prev, currentImageUrl]));
+              
+              // Try fallback if primary failed
+              if (currentImageSource === 'primary') {
+                const fallbackUrl = currentUser?.fallbackImages?.[currentIndex];
+                if (fallbackUrl && !failedImages.has(fallbackUrl)) {
+                  console.log('Trying fallback image:', fallbackUrl);
+                  setCurrentImageSource('fallback');
+                  return; // Don't set placeholder yet, try fallback first
+                }
+              }
+              
+              // If both primary and fallback failed, or no fallback available
               setImageLoading(false);
-              e.target.src = 'https://via.placeholder.com/400x600?text=Image+Not+Found';
+              e.target.src = 'https://via.placeholder.com/400x600?text=Image+Not+Available';
             }}
             onLoad={() => {
-              console.log('✅ Image loaded successfully:', currentImageUrl);
+              console.log('✅ Image loaded successfully:', currentImageUrl, 'Source:', currentImageSource);
               setImageLoading(false);
               setPreloadedImages(prev => new Set([...prev, currentImageUrl]));
             }}

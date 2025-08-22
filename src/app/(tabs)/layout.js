@@ -38,7 +38,7 @@ function TabsLayoutContent({ children }) {
     <>
       <DisablePinchZoom />
       <div 
-        className="min-h-screen"
+        className="min-h-screen overflow-y-auto scrollbar-hide"
         style={{
           position: 'relative',
           width: '100%',
