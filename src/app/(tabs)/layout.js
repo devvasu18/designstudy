@@ -14,7 +14,7 @@ function TabsLayoutContent({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const isHeaderScrolled = useScrollPosition(50);
-  const { selectedStory, setSelectedStory, notification, hideNotification, isPremiumModalOpen } = useAppContext();
+  const { selectedStory, setSelectedStory, notification, hideNotification, isPremiumModalOpen, isDarkMode } = useAppContext();
 
   // Debug log to track selectedStory changes
   React.useEffect(() => {
@@ -38,7 +38,7 @@ function TabsLayoutContent({ children }) {
     <>
       <DisablePinchZoom />
       <div 
-        className="min-h-screen overflow-y-auto scrollbar-hide"
+        className={`min-h-screen overflow-y-auto scrollbar-hide transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
         style={{
           position: 'relative',
           width: '100%',

@@ -1,8 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { MoreVertical, Lock, Heart, Share, Plus, Search, Bell } from 'lucide-react';
+import { useAppContext } from '@/context/AppContext';
 
 const SecretStalkersContent = ({ onUnlock, isSticky }) => {
+  const { isDarkMode } = useAppContext();
   const [friends, setFriends] = useState([
     {
       id: 1,
@@ -136,13 +138,19 @@ const SecretStalkersContent = ({ onUnlock, isSticky }) => {
   };
 
   return (
-    <div className="bg-white">
+    <div className={`transition-colors duration-300 ${
+      isDarkMode ? 'bg-gray-800' : 'bg-white'
+    }`}>
       {/* Friends List */}
       <div className="space-y-0">
         {friends.map((friend) => (
           <div 
             key={friend.id} 
-            className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 transition-all duration-200 cursor-pointer border-b border-gray-50 last:border-b-0 group"
+            className={`flex items-center justify-between px-4 py-2.5 transition-all duration-200 cursor-pointer border-b last:border-b-0 group ${
+              isDarkMode 
+                ? 'hover:bg-gray-700 border-gray-700' 
+                : 'hover:bg-gray-50 border-gray-50'
+            }`}
             onClick={() => friend.locked && handleUnlock(friend.id)}
           >
             <div className="flex items-center space-x-3">
@@ -164,10 +172,16 @@ const SecretStalkersContent = ({ onUnlock, isSticky }) => {
                 )}
               </div>
               <div className="flex-1">
-                <div className="font-medium text-gray-900 text-sm group-hover:text-purple-600 transition-colors antialiased tracking-tight">
+                <div className={`font-medium text-sm transition-colors antialiased tracking-tight ${
+                  isDarkMode 
+                    ? 'text-white group-hover:text-purple-400' 
+                    : 'text-gray-900 group-hover:text-purple-600'
+                }`}>
                   {friend.locked ? '🔒 Tap to unlock' : friend.name}
                 </div>
-                <div className="text-xs text-gray-500 leading-tight antialiased">
+                <div className={`text-xs leading-tight antialiased ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                }`}>
                   {friend.locked ? 'Hidden identity' : friend.username}
                 </div>
               </div>
@@ -186,7 +200,9 @@ const SecretStalkersContent = ({ onUnlock, isSticky }) => {
       </div>
 
       {/* Load More */}
-      <div className="px-4 py-3 border-t border-gray-100">
+      <div className={`px-4 py-3 border-t transition-colors duration-300 ${
+        isDarkMode ? 'border-gray-700' : 'border-gray-100'
+      }`}>
         <button className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium text-sm rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg antialiased tracking-tight">
           <div className="flex items-center justify-center gap-2">
             <Search className="w-4 h-4" />

@@ -1,8 +1,10 @@
 'use client';
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { getStoriesForHomePage } from '@/data/storyData';
+import { useAppContext } from '@/context/AppContext';
 
 const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
+  const { isDarkMode } = useAppContext();
   const [stories, setStories] = useState([]);
 
   useEffect(() => {
@@ -15,11 +17,22 @@ const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
   }, [onStoryClick]);
 
   return (
-    <div className={`bg-white px-3 py-3 border-b border-gray-100 transition-all duration-300 
-      ${isSticky ? 'sticky top-0 z-50 shadow-lg backdrop-blur-md bg-white/95' : ''}`}>
+    <div className={`px-3 py-3 border-b transition-all duration-300 ${
+      isDarkMode 
+        ? 'bg-gray-800 border-gray-700' 
+        : 'bg-white border-gray-100'
+    } ${isSticky ? `sticky top-0 z-50 shadow-lg backdrop-blur-md ${
+      isDarkMode ? 'bg-gray-800/95' : 'bg-white/95'
+    }` : ''}`}>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-bold text-gray-800 px-1 antialiased tracking-tight">Stories</h2>
-        <div className="text-xs text-purple-600 font-medium cursor-pointer hover:text-purple-800 antialiased">View all</div>
+        <h2 className={`text-lg font-bold px-1 antialiased tracking-tight ${
+          isDarkMode ? 'text-white' : 'text-gray-800'
+        }`}>Stories</h2>
+        <div className={`text-xs font-medium cursor-pointer transition-colors antialiased ${
+          isDarkMode 
+            ? 'text-purple-400 hover:text-purple-300' 
+            : 'text-purple-600 hover:text-purple-800'
+        }`}>View all</div>
       </div>
       <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
         {stories.map((story) => (
@@ -31,13 +44,19 @@ const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
             <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
               story.hasNewStory
                 ? 'bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 group-hover:scale-110 shadow-lg'
-                : 'bg-gray-200 group-hover:scale-105'
+                : `group-hover:scale-105 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'}`
             }`}>
-              <div className="relative w-full h-full rounded-full overflow-hidden bg-white p-0.5">
+              <div className={`relative w-full h-full rounded-full overflow-hidden p-0.5 ${
+                isDarkMode ? 'bg-gray-800' : 'bg-white'
+              }`}>
                 <img src={story.avatar} alt={story.username} className="w-full h-full object-cover rounded-full" />
               </div>
             </div>
-            <span className="text-xs text-gray-700 truncate max-w-[60px] block group-hover:text-purple-600 antialiased tracking-tight">
+            <span className={`text-xs truncate max-w-[60px] block transition-colors antialiased tracking-tight ${
+              isDarkMode 
+                ? 'text-gray-300 group-hover:text-purple-400' 
+                : 'text-gray-700 group-hover:text-purple-600'
+            }`}>
               {story.username}
             </span>
           </button>
@@ -46,7 +65,9 @@ const StoriesSwiper = memo(({ onStoryClick, isSticky }) => {
       
       {/* Secret Viewers Header */}
       <div className="mt-3 px-1">
-        <h2 className="text-xl font-semibold text-gray-500 tracking-tight antialiased">Secret Viewers</h2>
+        <h2 className={`text-xl font-semibold tracking-tight antialiased ${
+          isDarkMode ? 'text-gray-400' : 'text-gray-500'
+        }`}>Secret Viewers</h2>
       </div>
     </div>
   );

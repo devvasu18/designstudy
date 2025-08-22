@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { MoreHorizontal } from 'lucide-react';
 import MobileSettingsMenu from '../../MobileSettingsMenu';
+import { useAppContext } from '@/context/AppContext';
 
 const ProfileInfoCard = ({ onFollow, isFollowing }) => {
   const [showFullBio, setShowFullBio] = useState(false);
@@ -13,6 +14,8 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
     following: 0,
     posts: 0
   });
+  
+  const { isDarkMode } = useAppContext();
 
   const finalStats = {
     followers: 398,
@@ -47,8 +50,12 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
   }, []);
   
   return (
-    <div className="bg-white pt-0">
-      <div className="mx-4 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 rounded-3xl p-4 border border-purple-100/50 shadow-md backdrop-blur-sm">
+    <div className={`pt-0 transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
+      <div className={`mx-4 rounded-3xl p-4 border shadow-md backdrop-blur-sm transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 border-gray-600' 
+          : 'bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 border-purple-100/50'
+      }`}>
         {/* Profile Picture and Name */}
         <div className="flex items-center space-x-4 mb-4">
           <div className="relative group">
@@ -91,20 +98,32 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold text-gray-900 tracking-tight">Vasu Dev</h1>
+                <h1 className={`text-xl font-semibold tracking-tight transition-colors duration-300 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>Vasu Dev</h1>
               </div>
               <button 
                 onClick={() => setShowSettingsMenu(true)}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors group"
+                className={`p-2 rounded-full transition-colors group ${
+                  isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'
+                }`}
                 aria-label="More options"
               >
-                <MoreHorizontal className="w-5 h-5 text-gray-600 group-hover:text-gray-800" />
+                <MoreHorizontal className={`w-5 h-5 transition-colors duration-300 ${
+                  isDarkMode ? 'text-gray-300 group-hover:text-white' : 'text-gray-600 group-hover:text-gray-800'
+                }`} />
               </button>
             </div>
-            <p className="text-sm text-gray-600 mb-2 font-medium">@vasudev</p>
+            <p className={`text-sm mb-2 font-medium transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>@vasudev</p>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500 font-medium">Last updated:</span>
-              <span className="text-xs font-semibold text-gray-700 tracking-wide">{new Date().toLocaleString('en-US', { 
+              <span className={`text-xs font-medium transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-500' : 'text-gray-500'
+              }`}>Last updated:</span>
+              <span className={`text-xs font-semibold tracking-wide transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>{new Date().toLocaleString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit', 
                 day: '2-digit', 
@@ -117,17 +136,35 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
 
         {/* Clean Stats */}
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
+          <div className={`text-center backdrop-blur-sm rounded-2xl p-3 transition-all duration-300 cursor-pointer group hover:shadow-md ${
+            isDarkMode 
+              ? 'bg-gray-700/70 hover:bg-gray-600/90' 
+              : 'bg-white/70 hover:bg-white/90'
+          }`}>
             <div className="text-3xl font-extrabold text-purple-500 mb-1 tracking-tight">{animatedStats.followers}</div>
-            <div className="text-xs text-gray-600 font-semibold tracking-wide uppercase">Followers</div>
+            <div className={`text-xs font-semibold tracking-wide uppercase transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>Followers</div>
           </div>
-          <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
+          <div className={`text-center backdrop-blur-sm rounded-2xl p-3 transition-all duration-300 cursor-pointer group hover:shadow-md ${
+            isDarkMode 
+              ? 'bg-gray-700/70 hover:bg-gray-600/90' 
+              : 'bg-white/70 hover:bg-white/90'
+          }`}>
             <div className="text-3xl font-extrabold text-purple-500 mb-1 tracking-tight">{animatedStats.following}</div>
-            <div className="text-xs text-gray-600 font-semibold tracking-wide uppercase">Following</div>
+            <div className={`text-xs font-semibold tracking-wide uppercase transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>Following</div>
           </div>
-          <div className="text-center bg-white/70 backdrop-blur-sm rounded-2xl p-3 hover:bg-white/90 transition-all duration-300 cursor-pointer group hover:shadow-md">
+          <div className={`text-center backdrop-blur-sm rounded-2xl p-3 transition-all duration-300 cursor-pointer group hover:shadow-md ${
+            isDarkMode 
+              ? 'bg-gray-700/70 hover:bg-gray-600/90' 
+              : 'bg-white/70 hover:bg-white/90'
+          }`}>
             <div className="text-3xl font-extrabold text-purple-500 mb-1 tracking-tight">{animatedStats.posts}</div>
-            <div className="text-xs text-gray-600 font-semibold tracking-wide uppercase">Posts</div>
+            <div className={`text-xs font-semibold tracking-wide uppercase transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>Posts</div>
           </div>
         </div>
 
@@ -136,7 +173,11 @@ const ProfileInfoCard = ({ onFollow, isFollowing }) => {
           <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg tracking-wide">
             Analyse Profile
           </button>
-          <button className="flex-1 bg-white/70 hover:bg-white text-gray-700 text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg border border-gray-200 tracking-wide">
+          <button className={`flex-1 text-sm font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 hover:shadow-lg border tracking-wide ${
+            isDarkMode 
+              ? 'bg-gray-700/70 hover:bg-gray-600 text-gray-200 border-gray-600' 
+              : 'bg-white/70 hover:bg-white text-gray-700 border-gray-200'
+          }`}>
             Share Profile
           </button>
         </div>

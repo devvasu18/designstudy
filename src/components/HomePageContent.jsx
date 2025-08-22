@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import ProfileInfoCard from "@/components/ProfileInfoCard";
-import StoriesSwiper from "@/components/StoriesSwiper";
-import SecretStalkersContent from "@/components/SecretStalkersContent";
+import StoriesSwiper from "@/components/features/stories/StoriesSwiper";
+import SecretStalkersContent from "@/components/sections/SecretStalkersContent";
 import OnClickFeatures from "@/components/OnClickFeatures";
 import useScrollPosition from "@/hooks/useScrollPosition";
 
 export default function HomePageContent() {
   const isStoriesSticky = useScrollPosition(50);
-  const { setSelectedStory, showNotification } = useAppContext();
+  const { setSelectedStory, showNotification, isDarkMode } = useAppContext();
 
   const handleAddStory = () => {
     showNotification("📸 Add story feature coming soon!", "info");
@@ -25,7 +25,7 @@ export default function HomePageContent() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 transition-colors duration-300 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
       <ProfileInfoCard />
       
       <StoriesSwiper

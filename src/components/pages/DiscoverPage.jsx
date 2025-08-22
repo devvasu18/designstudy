@@ -9,7 +9,7 @@ const DiscoverPage = () => {
   const [followedUsers, setFollowedUsers] = useState(new Set());
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { setSelectedStory } = useAppContext();
+  const { setSelectedStory, isDarkMode } = useAppContext();
 
   useEffect(() => {
     // Load users from centralized story data
@@ -37,24 +37,36 @@ const DiscoverPage = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white min-h-screen relative">
+    <div className={`max-w-md mx-auto min-h-screen relative transition-colors duration-300 ${
+      isDarkMode ? 'bg-gray-900' : 'bg-white'
+    }`}>
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-100">
+      <div className={`sticky top-0 z-40 border-b transition-colors duration-300 ${
+        isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-100'
+      }`}>
         {/* Title */}
         <div className="px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-500 text-center">Secret Stories</h1>
+          <h1 className={`text-2xl font-bold text-center transition-colors duration-300 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>Secret Stories</h1>
         </div>
 
         {/* Search Bar */}
         <div className="px-4 pb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
+              isDarkMode ? 'text-gray-500' : 'text-gray-400'
+            }`} />
             <input
               type="text"
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-100 rounded-full border-none outline-none text-sm placeholder-gray-500 focus:bg-gray-200 transition-colors duration-200"
+              className={`w-full pl-10 pr-4 py-3 rounded-full border-none outline-none text-sm transition-colors duration-200 ${
+                isDarkMode 
+                  ? 'bg-gray-800 text-white placeholder-gray-400 focus:bg-gray-700' 
+                  : 'bg-gray-100 text-gray-900 placeholder-gray-500 focus:bg-gray-200'
+              }`}
             />
           </div>
         </div>
@@ -81,9 +93,11 @@ const DiscoverPage = () => {
                   <div className={`w-20 h-20 rounded-full p-1 transition-all duration-300 ${
                     user.hasStory 
                       ? 'bg-gradient-to-tr from-purple-400 via-pink-400 to-red-400 shadow-lg animate-pulse' 
-                      : 'bg-gray-200'
+                      : isDarkMode ? 'bg-gray-600' : 'bg-gray-200'
                   }`}>
-                    <div className="relative w-full h-full rounded-full overflow-hidden bg-white">
+                    <div className={`relative w-full h-full rounded-full overflow-hidden ${
+                      isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}>
                       <img
                         src={user.avatar}
                         alt={user.username}
@@ -98,7 +112,11 @@ const DiscoverPage = () => {
 
               {/* Username */}
               <div className="text-center">
-                <p className="text-sm font-medium text-gray-900 truncate max-w-[80px] group-hover:text-purple-600 transition-colors">
+                <p className={`text-sm font-medium truncate max-w-[80px] transition-colors ${
+                  isDarkMode 
+                    ? 'text-white group-hover:text-purple-400' 
+                    : 'text-gray-900 group-hover:text-purple-600'
+                }`}>
                   {user.username}
                 </p>
               </div>

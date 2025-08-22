@@ -7,10 +7,16 @@
   --font-jetbrains-mono: var(--font-jetbrains-mono);
 }
 
+/* Dark mode variables */
+.dark {
+  --background: #111827;
+  --foreground: #f9fafb;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #111827;
+    --foreground: #f9fafb;
   }
 }
 
@@ -23,6 +29,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode scrollbar styling */
+.dark .scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.dark .scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Hide scrollbars */

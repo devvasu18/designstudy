@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { X, Check, Crown, Shield, Gem, Star } from 'lucide-react';
+import { useAppContext } from '@/context/AppContext';
 
 export default function PremiumSubscription({ onClose }) {
+  const { isDarkMode } = useAppContext();
   const [selectedPlan, setSelectedPlan] = useState('3months');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -90,13 +92,19 @@ export default function PremiumSubscription({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-white">
-      <div className="h-screen w-full max-w-md mx-auto bg-gray-50 relative sm:max-w-lg md:max-w-xl lg:max-w-2xl flex flex-col">
+    <div className={`fixed inset-0 z-[9999] transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
+      <div className={`h-screen w-full max-w-md mx-auto relative sm:max-w-lg md:max-w-xl lg:max-w-2xl flex flex-col transition-colors duration-300 ${
+        isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
+      }`}>
         {/* Fixed Close Button */}
         <div className="absolute top-8 right-4 z-10">
           <button 
             onClick={handleClose}
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-gray-100 transition-colors"
+            className={`w-8 h-8 md:w-10 md:h-10 rounded-full shadow-lg flex items-center justify-center transition-colors duration-300 ${
+              isDarkMode 
+                ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' 
+                : 'bg-white hover:bg-gray-100 text-gray-600'
+            }`}
           >
             <X className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
           </button>
